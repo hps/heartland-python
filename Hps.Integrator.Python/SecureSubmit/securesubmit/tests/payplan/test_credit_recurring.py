@@ -1,0 +1,76 @@
+import unittest
+from securesubmit.entities import HpsTokenData
+from securesubmit.infrastructure.enums import HpsPayPlanScheduleStatus
+from securesubmit.services.gateway import HpsCreditService, HpsPayPlanService
+from securesubmit.services.token import HpsTokenService
+from securesubmit.tests.test_data import TestServicesConfig, TestCreditCard, TestCardHolder
+
+
+class PayPlanRecurringTests(unittest.TestCase):
+    credit_service = HpsCreditService(TestServicesConfig.valid_services_config)
+    pp_service = HpsPayPlanService(TestServicesConfig.valid_pay_plan_config)
+    schedule = pp_service.page(1, 0).find_all_schedules({
+        'scheduleStatus': HpsPayPlanScheduleStatus.ACTIVE,
+        'scheduleIdentifier': 'SecureSubmit'
+    }).results[0]
+
+    def test_one_time_with_card(self):
+        response = self.credit_service.recurring(
+            self.schedule,
+            10,
+            TestCreditCard.valid_visa,
+            TestCardHolder.valid_card_holder,
+            True)
+        self.assertIsNotNone(response)
+        self.assertEqual('00', response.response_code)
+
+    def test_one_time_with_token(self):
+        token = self._get_token(TestCreditCard.valid_visa)
+        response = self.credit_service.recurring(self.schedule, 10, token, None, True)
+        self.assertIsNotNone(response)
+        self.assertEqual('00', response.response_code)
+
+    def test_one_time_with_payment_method_key(self):
+        payment_method_key = self._get_payment_method_key()
+        response = self.credit_service.recurring(self.schedule, 10, payment_method_key, None, True)
+        self.assertIsNotNone(response)
+        self.assertEqual('00', response.response_code)
+
+    def test_with_card(self):
+        response = self.credit_service.recurring(
+            self.schedule,
+            10,
+            TestCreditCard.valid_visa,
+            TestCardHolder.valid_card_holder)
+        self.assertIsNotNone(response)
+        self.assertEqual('00', response.response_code)
+
+    def test_with_token(self):
+        token = self._get_token(TestCreditCard.valid_visa)
+        response = self.credit_service.recurring(self.schedule, 10, token)
+        self.assertIsNotNone(response)
+        self.assertEqual('00', response.response_code)
+
+    def test_with_payment_method_key(self):
+        payment_method_key = self._get_payment_method_key()
+        response = self.credit_service.recurring(self.schedule, 10, payment_method_key)
+        self.assertIsNotNone(response)
+        self.assertEqual('00', response.response_code)
+
+    def _get_token(self, card, key=None):
+        if key is not None and key != '':
+            self.public_key = key
+        else:
+            self.public_key = TestServicesConfig.valid_services_config.credential_token
+
+        self.token_service = HpsTokenService(self.public_key)
+        token_response = self.token_service.get_token(card)
+        if token_response.token_value is not None:
+            token = HpsTokenData()
+            token.token_value = token_response.token_value
+            return token
+        else:
+            return token_response
+
+    def _get_payment_method_key(self):
+        return self.schedule.payment_method_key
