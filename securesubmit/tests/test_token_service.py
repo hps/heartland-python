@@ -106,14 +106,20 @@ class TokenServiceTests(unittest.TestCase):
         self.assertIsNotNone(response.token_expire)
 
     def test_token_charge(self):
-        token = self.token_service.get_token(
-            TestCreditCard.valid_visa)
-        charge_service = HpsCreditService(
-            TestServicesConfig.valid_services_config)
-        charge = charge_service.charge(
-            1, 'USD',
-            token.token_value,
-            TestCardHolder.valid_card_holder)
+        token = self.token_service.get_token(TestCreditCard.valid_visa)
+        charge_service = HpsCreditService(TestServicesConfig.valid_services_config)
+        charge = charge_service.charge(1, 'USD', token.token_value, TestCardHolder.valid_card_holder)
+
+        self.assertIsNotNone(charge)
+        self.assertEqual('00', charge.response_code)
+
+    def test_swipe_token(self):
+        swipe_data = '.11%B4012001000000016^VI TEST CREDIT^251210100000000000000000?|mc7vPHGGYh79DuD2Ys0ELhubZcP7dIsNaxQlRF243dIX5kfXEnQKaciND|+++++++JnvkN4mBa11;4012001000000016=25121010000000000000?|kON4LjKZ+tcDZcIef/W2H7oRDw|+++++++JnvkN4mBa00||/wECAQECAoFGAgEH3wEeShV78RZwb3NAc2VjdXJlZXhjaGFuZ2UubmV0TBtEt4SQvyC03zgmcS/4rnZdMpF+4mJT6EYuyDKC+WJAMG4+cSiWOGHtqwaK6edyzqosTPLavpdRat7z2dVX/SM3//TXLGGrSIayLW6Zmatbw4MT0KtBuyYaKX74E4v2L2PhItHv7m6rm2xGu2yTPmCvm9yFTouljvhF3Klx8rUAn0o0zCVAE9sl/iix+qqnTLEvgd/XXpaiYwyQoKSkkZGVX7QP'
+        token = self.token_service.get_swipe_token(swipe_data)
+        self.assertIsNotNone(token)
+
+        charge_service = HpsCreditService(TestServicesConfig.valid_services_config)
+        charge = charge_service.charge(1, 'USD', token.token_value, TestCardHolder.valid_card_holder)
 
         self.assertIsNotNone(charge)
         self.assertEqual('00', charge.response_code)
@@ -121,14 +127,11 @@ class TokenServiceTests(unittest.TestCase):
     def test_encrypted_card_token(self):
         track = '4012007060016=2512101hX3JZdqcwEOaoUry'
         ktb = '/wECAQEEAoFGAgEH3ggDTDT6jRZwb3NAc2VjdXJlZXhjaGFuZ2UubmV0MCtomwyCdnN+qr1I/SvhXbgOurdPKxkAyrmBQkzS/0UB6HWpdN1nc4IXcgB7tuVAs4fRjIlYOTIWNjf10bwciwD3m1JNoDMtvoXggaN7dLI7uuA+jYzt0gAmzgB3QqUFY0k7awOm923RJhnVaWUBJv9jL3+gvFNzZ+CiYbJH3BoArnCvWJbn/ohfnlJ6bA+GPC2fJlQkizQXbrRoF+pbcezCaY9W'
-        token = self.token_service.get_token(track, '02', ktb)
+        token = self.token_service.get_track_token(track, '02', ktb)
         self.assertIsNotNone(token)
-        charge_service = HpsCreditService(
-            TestServicesConfig.valid_services_config)
-        charge = charge_service.charge(
-            1, 'USD',
-            token.token_value,
-            TestCardHolder.valid_card_holder)
+
+        charge_service = HpsCreditService(TestServicesConfig.valid_services_config)
+        charge = charge_service.charge(1, 'USD', token.token_value, TestCardHolder.valid_card_holder)
 
         self.assertIsNotNone(charge)
         self.assertEqual('00', charge.response_code)

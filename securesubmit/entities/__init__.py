@@ -6,6 +6,8 @@
     :copyright: (c) Heartland Payment Systems. All rights reserved.
 """
 
+import datetime
+from securesubmit.infrastructure import HpsArgumentException
 from securesubmit.infrastructure.enums import HpsTransactionType
 
 
@@ -56,9 +58,7 @@ class HpsTransaction(object):
             transaction._header.rsp_dt = rsp['Header']['RspDT']
 
         transaction.transaction_id = int(rsp['Header']['GatewayTxnId'])
-        if ('ClientTxnIdSpecified' in rsp['Header'] and
-                rsp['Header']['ClientTxnIdSpecified'] is True):
-            transaction.client_transaction_id = rsp['Header']['ClientTxnId']
+        transaction.client_transaction_id = transaction._header.client_txn_id
 
         # hydrate the body
         item = rsp['Transaction'].itervalues().next()
@@ -123,3 +123,22 @@ class HpsTransactionHeader(object):
     gateway_rsp_msg = None
     rsp_dt = None
     client_txn_id = None
+
+
+class HpsDirectMarketData(object):
+    invoice_number = None
+    ship_month = None
+    ship_day = None
+
+    def __init__(self, invoice_number=None, ship_day=None, ship_month=None):
+        self.invoice_number = invoice_number
+
+        if ship_day is not None:
+            self.ship_day = ship_day
+        else:
+            self.ship_day = datetime.datetime.now().day
+
+        if ship_month is not None:
+            self.ship_month = ship_month
+        else:
+            self.ship_month = datetime.datetime.now().month

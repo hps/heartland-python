@@ -125,6 +125,7 @@ class HpsGatewayResponseValidation(object):
         e = HpsGatewayResponseValidation.get_exception(rsp_code, rsp_text)
 
         if e is not None:
+            print e.message
             raise e
 
         if 'Transaction' not in response and \
@@ -187,13 +188,13 @@ class HpsIssuerResponseValidation(object):
             transaction_id, response_code, response_text)
 
         if e is not None:
+            print '{0}: {1}'.format(response_code, response_text)
             raise e
 
     @staticmethod
     def get_exception(transaction_id, response_code, response_text):
-        if (response_code == '85' or
-                response_code == '00' or
-                response_code == '0'):
+        accepted_codes = {'85', '00', '0', '10'}
+        if response_code in accepted_codes:
             return None
 
         code = None
@@ -205,9 +206,9 @@ class HpsIssuerResponseValidation(object):
             return HpsCreditException(
                 transaction_id,
                 HpsExceptionCodes.unknown_credit_error,
-                _credit_exception_code_to_message[
-                    HpsExceptionCodes.unknown_credit_error],
-                response_code, response_text)
+                _credit_exception_code_to_message[HpsExceptionCodes.unknown_credit_error],
+                response_code, response_text
+            )
 
         message = None
         if code in _credit_exception_code_to_message:

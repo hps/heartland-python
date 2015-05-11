@@ -9,11 +9,6 @@
 from enum import Enum
 
 
-class HpsPayPlanCustomerStatus(Enum):
-    active = 'Active'
-    inactive = 'Inactive'
-
-
 class CheckActionType(Enum):
     SALE = 'SALE'
     OVERRIDE = 'OVERRIDE'
@@ -92,3 +87,87 @@ class HpsExceptionCodes(Enum):
     processing_error = 24
     issuer_timeout_reversal_error = 25
     unknown_credit_error = 26
+
+
+class HpsTaxType(Enum):
+    not_used = 'NOTUSED'
+    sales_tax = 'SALESTAX'
+    tax_exempt = 'TAXEXEMPT'
+
+
+class SecCode(Enum):
+    ppd = 'PPD'
+    ccd = 'CCD'
+    pop = 'POP'
+    web = 'WEB'
+    tel = 'TEL'
+    e_bronze = 'eBronze'
+
+
+class EncodingType(Enum):
+    base16 = 'base16'
+    base64 = 'base64'
+
+
+class TypeOfPaymentDataType(Enum):
+    secure_3d = '3DSecure'
+
+
+class HpsPayPlanAccountType(Enum):
+    BUSINESS = 'Business'
+    PERSONAL = 'Personal'
+
+
+class HpsPayPlanCustomerStatus(Enum):
+    ACTIVE = 'Active'
+    INACTIVE = 'Inactive'
+
+
+class HpsPayPlanPaymentMethodStatus(HpsPayPlanCustomerStatus):
+    INVALID = 'Invalid'
+    REVOKED = 'Revoked'
+    EXPIRED = 'Expired'
+    LOST_STOLEN = 'Lost/Stolen'
+
+
+class HpsPayPlanPaymentMethodType(Enum):
+    ACH = 'ACH'
+    CREDIT_CARD = 'Credit Card'
+
+
+class HpsPayPlanScheduleDuration(Enum):
+    ONGOING = 'Ongoing'
+    END_DATE = 'End Date'
+    LIMITED_NUMBER = 'Limited Number'
+
+
+class HpsPayPlanScheduleFrequency(Enum):
+    WEEKLY = 'Weekly'
+    BIWEEKLY = 'Bi-Weekly'
+    SEMIMONTHLY = 'Semi-Monthly'
+    MONTHLY = 'Monthly'
+    QUARTERLY = 'Quarterly'
+    SEMIANNUALLY = 'Semi-Annually'
+    ANNUALLY = 'Annually'
+
+
+class HpsPayPlanScheduleStatus(HpsPayPlanCustomerStatus):
+    FAILED = 'FAILED'
+
+
+class HpsTrackDataMethod(Enum):
+    swipe = 'swipe'
+    proximity = 'proximity'
+
+
+class HpsAdditionalAmountType(Enum):
+    health_care_total = '4S'
+    prescription_subtotal = '4U'
+    vision_optical_subtotal = '4V'
+    clinic_or_qualified_medical_subtotal = '4W'
+    dental_subtotal = '4X'
+
+
+class HpsTokenMappingType(Enum):
+    UNIQUE = 'UNIQUE'
+    CONSTANT = 'CONSTANT'

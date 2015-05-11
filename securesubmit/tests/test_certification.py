@@ -27,7 +27,7 @@ class Certification(unittest.TestCase):
         self.client.charge(
             12.00, "USD",
             TestCreditCard.valid_discover,
-            TestCardHolder.cert_holder_short_zip_no_street)
+            TestCardHolder.cert_holder_long_zip_no_street)
 
     def test_credit_sale_amex(self):
         self.client.charge(

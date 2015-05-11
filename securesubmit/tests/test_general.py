@@ -9,9 +9,9 @@ from securesubmit.services.gateway import (
     HpsCreditException,
     HpsGatewayException,
     HpsTransactionDetails,
-    HpsException,
     HpsCardHolder,
-    HpsAddress)
+    HpsAddress,
+    HpsDirectMarketData)
 from securesubmit.tests.test_data import (
     TestCreditCard,
     TestCardHolder,
@@ -212,3 +212,47 @@ class GeneralTests(unittest.TestCase):
         if len(items) > 0:
             charge = self.charge_service.get(items[0].transaction_id)
             self.assertIsNotNone(charge)
+
+    def test_charge_with_market_data(self):
+        direct_market_data = HpsDirectMarketData('123456', 10, 8)
+        self.charge_service._config = TestServicesConfig.valid_services_config
+
+        response = self.charge_service.charge(
+            50, 'usd',
+            TestCreditCard.valid_amex,
+            TestCardHolder.valid_card_holder,
+            direct_market_data=direct_market_data)
+
+        self.assertEqual('00', response.response_code)
+
+    def test_capture_with_market_data(self):
+        self.charge_service._config = TestServicesConfig.valid_services_config
+        auth_response = self.charge_service.authorize(
+            50, 'usd', TestCreditCard.valid_amex, TestCardHolder.valid_card_holder)
+        self.assertEquals('00', auth_response.response_code)
+
+        direct_market_data = HpsDirectMarketData('123456', 10, 8)
+        response = self.charge_service.capture(auth_response.transaction_id, direct_market_data=direct_market_data)
+        self.assertEquals('00', response.response_code)
+
+    def test_charge_with_default_market_data(self):
+        direct_market_data = HpsDirectMarketData()
+        self.charge_service._config = TestServicesConfig.valid_services_config
+
+        response = self.charge_service.charge(
+            50, 'usd',
+            TestCreditCard.valid_amex,
+            TestCardHolder.valid_card_holder,
+            direct_market_data=direct_market_data)
+
+        self.assertEqual('00', response.response_code)
+
+    def test_capture_with_default_market_data(self):
+        self.charge_service._config = TestServicesConfig.valid_services_config
+        auth_response = self.charge_service.authorize(
+            50, 'usd', TestCreditCard.valid_amex, TestCardHolder.valid_card_holder)
+        self.assertEquals('00', auth_response.response_code)
+
+        direct_market_data = HpsDirectMarketData()
+        response = self.charge_service.capture(auth_response.transaction_id, direct_market_data=direct_market_data)
+        self.assertEquals('00', response.response_code)

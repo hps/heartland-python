@@ -8,6 +8,7 @@
 
 import re
 from securesubmit.entities import *
+from securesubmit.infrastructure.enums import HpsTrackDataMethod
 from securesubmit.infrastructure.validation import *
 
 
@@ -92,6 +93,7 @@ class HpsCreditCard(object):
     exp_year = None
     exp_month = None
     cvv = None
+    encryption_data = None
 
     @property
     def card_type(self):
@@ -108,12 +110,26 @@ class HpsCreditCard(object):
             "Jcb": "/^(?:2131|1800|35\d{3})\d{11}/",
         }
 
-        type = "Unknown"
+        card_type = "Unknown"
 
         for card, rx in card_regexes.items():
             if re.match(rx, self.number) is not None:
-                type = card
-        return type
+                card_type = card
+        return card_type
+
+    def with_cvv(self, cvv):
+        self.cvv = cvv
+        return self
+
+
+class HpsOfflineAuthorization(HpsTransaction):
+    @classmethod
+    def from_dict(cls, rsp):
+        offline_auth = super(HpsOfflineAuthorization, cls).from_dict(rsp)
+        offline_auth.response_code = '00'
+        offline_auth.response_text = ''
+
+        return offline_auth
 
 
 class HpsRefund(HpsTransaction):
@@ -357,3 +373,72 @@ class HpsVoid(HpsTransaction):
         void.response_text = ''
 
         return void
+
+
+class HpsCPCEdit(HpsTransaction):
+    @classmethod
+    def from_dict(cls, rsp):
+        edit = super(HpsCPCEdit, cls).from_dict(rsp)
+        edit.response_code = '00'
+        edit.response_text = ''
+
+        return edit
+
+
+class HpsCPCData:
+    card_holder_po_number = None
+    tax_type = None
+    tax_amount = None
+
+    def __init__(self, card_holder_po_number=None, tax_type=None, tax_amount=None):
+        if card_holder_po_number is not None:
+            if len(card_holder_po_number) > 17:
+                raise HpsArgumentException('Card holder po number must be less that 17 characters.')
+            self.card_holder_po_number = card_holder_po_number
+
+        self.tax_type = tax_type
+
+        if tax_amount is not None:
+            self.tax_amount = tax_amount
+
+
+class HpsRecurringBilling(HpsAuthorization):
+    pass
+
+
+class HpsTrackData(object):
+    method = HpsTrackDataMethod.swipe
+    value = None
+    encryption_data = None
+
+
+class HpsEncryptionData(object):
+    version = None
+    encrypted_track_number = None
+    ktb = None
+    ksn = None
+
+
+class HpsAdditionalAmount(object):
+    amount_type = None
+    amount = None
+
+    def __init__(self, amount_type=None, amount=None):
+        self.amount_type = amount_type
+        self.amount = amount
+
+
+class HpsAutoSubstantiation(object):
+    merchant_verification_value = None
+    real_time_substantiation = False
+    additional_amounts = []
+
+    def __init__(self, additional_amounts=None, real_time_substantiation=False, merchant_verification_value=None):
+        self.additional_amounts = additional_amounts
+        self.merchant_verification_value = merchant_verification_value
+        self.real_time_substantiation = real_time_substantiation
+
+
+class HpsTxnReferenceData(object):
+    authorization_code = None
+    card_number_last_4 = None

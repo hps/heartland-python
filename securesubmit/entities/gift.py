@@ -9,40 +9,31 @@
 from securesubmit.entities import HpsTransaction
 
 
-class HpsEncryptionData(object):
-    version = None
-
-    """This is required in certain encryption versions when
-       supplying track data and indicates which track has been supplied."""
-    encrypted_track_number = None
-
-    """This is required in certain encryption versions;
-       the <u>K</u>ey <u>T</u>ransmission <u>B</u>lock
-       (KTB) used at the point of sale."""
-    ktb = None
-
-    """This is required in certain encryption versions;
-       the <u>K</u>ey <u>S</u>erial <u>N</u>umber (KSN)
-       used at the point of sale."""
-    ksn = None
-
-
 class HpsGiftCard(object):
-    number = None
-    exp_month = None
-    exp_year = None
-    is_track_data = None
+    track_data = None
+    card_number = None
+    alias = None
+    token_value = None
     encryption_data = None
+    pin = None
 
-    def __init__(self, number=None):
-        is_track_data = False
-        self.number = number
+    @classmethod
+    def from_dict(cls, rsp):
+        card = cls()
+        card.track_data = None if 'TrackData' not in rsp else rsp['TrackData']
+        card.card_number = None if 'CardNbr' not in rsp else rsp['CardNbr']
+        card.alias = None if 'Alias' not in rsp else rsp['Alias']
+        card.token_value = None if 'TokenValue' not in rsp else rsp['TokenValue']
+        card.encryption_data = None if 'EncryptionData' not in rsp else rsp['EncryptionData']
+        card.pin = None if 'PIN' not in rsp else rsp['PIN']
+
+        return card
 
 
 class HpsGiftCardActivate(HpsTransaction):
     authorization_code = None
     balance_amount = None
-    points_balance = None
+    points_balance_amount = None
 
     """The rewards (dollars or points) added to the account as a
        result of a transaction."""
@@ -98,13 +89,9 @@ class HpsGiftCardAlias(HpsTransaction):
 
         alias = cls()
         alias.transaction_id = rsp['Header']['GatewayTxnId']
-        alias.gift_card = HpsGiftCard(item['CardData'])
-        alias.rsp_code = None
-        if 'RspCode' in item:
-            alias.rsp_code = str(item['RspCode'])
-        alias.rsp_text = None
-        if 'RspText' in item:
-            alias.rsp_text = item['RspText']
+        alias.gift_card = HpsGiftCard.from_dict(item['CardData'])
+        alias.response_code = None if 'RspCode' not in item else item['RspCode']
+        alias.response_text = None if 'RspText' not in item else item['RspText']
 
         return alias
 

@@ -61,7 +61,17 @@ class HpsCardToken(HpsToken):
                 self.card = Card(card_data, cvc, exp_month, exp_year)
 
 
-class HpsEncryptedCardToken(HpsToken):
+class HpsSwipeToken(HpsToken):
+    card = None
+
+    def __init__(self, swipe_data=None):
+        HpsToken.__init__(self)
+
+        if swipe_data is not None:
+            self.card = CardSwipe(swipe_data)
+
+
+class HpsTrackDataToken(HpsToken):
     encryptedcard = None
 
     def __init__(self, track_data=None, track_number=None, ktb=None, pin_block=None):
@@ -85,6 +95,15 @@ class Card(object):
         self.cvc = cvc
         self.exp_month = exp_month
         self.exp_year = exp_year
+
+
+class CardSwipe(object):
+    track_method = None
+    track = None
+
+    def __init__(self, swipe_data):
+        self.track_method = 'swipe'
+        self.track = swipe_data
 
 
 class EncryptedCard:

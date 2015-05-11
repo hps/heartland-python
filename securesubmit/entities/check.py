@@ -31,7 +31,7 @@ class HpsCheck(object):
        contact your HPS representative for
        more information on the GETI eBronze
        program."""
-    check_verify = None
+    check_verify = False
 
     """NACHA Standard Entry Class Code.
        NOTE: If processing with Colonnade,
@@ -45,7 +45,7 @@ class HpsCheckHolder(HpsConsumer):
     check_name = None
     dl_state = None
     dl_number = None
-    ssl4 = None
+    ssnl4 = None
     dob_year = None
     courtesy_card = None
 

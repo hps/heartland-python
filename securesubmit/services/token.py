@@ -8,13 +8,8 @@
 
 import jsonpickle
 import requests
-from securesubmit.serialization import (
-    HpsToken,
-    HpsCardToken,
-    HpsEncryptedCardToken,
-)
 from securesubmit.infrastructure import HpsException, HpsArgumentException
-from securesubmit.entities.credit import HpsCreditCard
+from securesubmit.serialization import HpsToken, HpsCardToken, HpsSwipeToken, HpsTrackDataToken
 
 
 class HpsTokenService(object):
@@ -64,8 +59,11 @@ class HpsTokenService(object):
         except Exception, e:
             raise HpsException(e.message)
 
-    def get_token(self, card_data, track_number=None, ktb=None, pin_block=None):
-        if isinstance(card_data, HpsCreditCard):
-            return self._request_token(HpsCardToken(card_data))
-        else:
-            return self._request_token(HpsEncryptedCardToken(card_data, track_number, ktb, pin_block))
+    def get_token(self, card):
+        return self._request_token(HpsCardToken(card))
+
+    def get_swipe_token(self, swipe):
+        return self._request_token(HpsSwipeToken(swipe))
+
+    def get_track_token(self, track, ktb, pin_block=None):
+        return self._request_token(HpsTrackDataToken(track, ktb, pin_block))

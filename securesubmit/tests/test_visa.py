@@ -1,4 +1,6 @@
 import unittest
+from securesubmit.entities.credit import HpsCPCData
+from securesubmit.infrastructure.enums import HpsTaxType
 from securesubmit.tests.test_data \
     import (TestServicesConfig,
             TestCreditCard,
@@ -347,6 +349,133 @@ class VisaTests(unittest.TestCase):
         capture_response = self.charge_service.capture(
             auth_response.transaction_id)
         self.assertEqual("00", capture_response.response_code)
+
+    # test CPC stuff
+    def test_visa_charge_cpc_req_should_return_business(self):
+        """
+        Visa charge and CPC Req should return cpcIndicator 'B'.
+        """
+        charge_response = self.charge_service.charge(
+            112.34, 'usd',
+            TestCreditCard.valid_visa,
+            TestCardHolder.valid_card_holder,
+            cpc_req=True
+        )
+        self.assertEquals('00', charge_response.response_code)
+        self.assertEquals('B', charge_response.cpc_indicator)
+
+        cpc_data = HpsCPCData()
+        cpc_data.card_holder_po_number = '123456789'
+        cpc_data.tax_type = HpsTaxType.sales_tax
+        cpc_data.tax_amount = '15'
+
+        edit_response = self.charge_service.cpc_edit(charge_response.transaction_id, cpc_data)
+        self.assertEquals('00', edit_response.response_code)
+
+    def test_visa_charge_cpc_req_should_return_corporate(self):
+        """
+        Visa charge and CPC Req should return cpcIndicator 'R'.
+        """
+        charge_response = self.charge_service.charge(
+            123.45, 'usd',
+            TestCreditCard.valid_visa,
+            TestCardHolder.valid_card_holder,
+            cpc_req=True
+        )
+        self.assertEquals('00', charge_response.response_code)
+        self.assertEquals('R', charge_response.cpc_indicator)
+
+        cpc_data = HpsCPCData()
+        cpc_data.card_holder_po_number = '123456789'
+        cpc_data.tax_type = HpsTaxType.sales_tax
+        cpc_data.tax_amount = '15'
+
+        edit_response = self.charge_service.cpc_edit(charge_response.transaction_id, cpc_data)
+        self.assertEquals('00', edit_response.response_code)
+
+    def test_visa_charge_cpc_req_should_return_purchasing(self):
+        """
+        Visa charge and CPC Req should return cpcIndicator 'S'.
+        """
+        charge_response = self.charge_service.charge(
+            134.56, 'usd',
+            TestCreditCard.valid_visa,
+            TestCardHolder.valid_card_holder,
+            cpc_req=True
+        )
+        self.assertEquals('00', charge_response.response_code)
+        self.assertEquals('S', charge_response.cpc_indicator)
+
+        cpc_data = HpsCPCData()
+        cpc_data.card_holder_po_number = '123456789'
+        cpc_data.tax_type = HpsTaxType.sales_tax
+        cpc_data.tax_amount = '15'
+
+        edit_response = self.charge_service.cpc_edit(charge_response.transaction_id, cpc_data)
+        self.assertEquals('00', edit_response.response_code)
+
+    def test_visa_auth_cpc_req_should_return_business(self):
+        """
+        Visa auth and CPC Req should return cpcIndicator 'B'.
+        """
+        charge_response = self.charge_service.authorize(
+            112.34, 'usd',
+            TestCreditCard.valid_visa,
+            TestCardHolder.valid_card_holder,
+            cpc_req=True
+        )
+        self.assertEquals('00', charge_response.response_code)
+        self.assertEquals('B', charge_response.cpc_indicator)
+
+        cpc_data = HpsCPCData()
+        cpc_data.card_holder_po_number = '123456789'
+        cpc_data.tax_type = HpsTaxType.sales_tax
+        cpc_data.tax_amount = '15'
+
+        edit_response = self.charge_service.cpc_edit(charge_response.transaction_id, cpc_data)
+        self.assertEquals('00', edit_response.response_code)
+
+    def test_visa_auth_cpc_req_should_return_corporate(self):
+        """
+        Visa auth and CPC Req should return cpcIndicator 'R'.
+        """
+        charge_response = self.charge_service.authorize(
+            123.45, 'usd',
+            TestCreditCard.valid_visa,
+            TestCardHolder.valid_card_holder,
+            cpc_req=True
+        )
+        self.assertEquals('00', charge_response.response_code)
+        self.assertEquals('R', charge_response.cpc_indicator)
+
+        cpc_data = HpsCPCData()
+        cpc_data.card_holder_po_number = '123456789'
+        cpc_data.tax_type = HpsTaxType.sales_tax
+        cpc_data.tax_amount = '15'
+
+        edit_response = self.charge_service.cpc_edit(charge_response.transaction_id, cpc_data)
+        self.assertEquals('00', edit_response.response_code)
+
+    def test_visa_auth_cpc_req_should_return_purchasing(self):
+        """
+        Visa auth and CPC Req should return cpcIndicator 'S'.
+        """
+        charge_response = self.charge_service.authorize(
+            134.56, 'usd',
+            TestCreditCard.valid_visa,
+            TestCardHolder.valid_card_holder,
+            cpc_req=True
+        )
+        self.assertEquals('00', charge_response.response_code)
+        self.assertEquals('S', charge_response.cpc_indicator)
+
+        cpc_data = HpsCPCData()
+        cpc_data.card_holder_po_number = '123456789'
+        cpc_data.tax_type = HpsTaxType.sales_tax
+        cpc_data.tax_amount = '15'
+
+        edit_response = self.charge_service.cpc_edit(charge_response.transaction_id, cpc_data)
+        self.assertEquals('00', edit_response.response_code)
 
     # Helper Methods
     def _charge_valid_visa(self, amount):
