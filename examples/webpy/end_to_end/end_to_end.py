@@ -1,7 +1,9 @@
 import traceback
 import re
 import os
+
 import web
+
 from securesubmit.services import HpsServicesConfig
 from securesubmit.services.gateway import (
     HpsCreditService,
@@ -10,6 +12,7 @@ from securesubmit.services.gateway import (
     HpsCreditException,
     HpsGatewayException
 )
+
 
 urls = (
     '/', 'Index',

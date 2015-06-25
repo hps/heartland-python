@@ -35,6 +35,12 @@ securesubmit/tests/test_token_service.py
 securesubmit/tests/test_visa.py
 securesubmit/tests/applepay/__init__.py
 securesubmit/tests/applepay/test_full_cycle.py
+securesubmit/tests/certification/__init__.py
+securesubmit/tests/certification/ecommerce.py
+securesubmit/tests/certification/moto.py
+securesubmit/tests/certification/recurring.py
+securesubmit/tests/certification/restauant.py
+securesubmit/tests/certification/retail.py
 securesubmit/tests/fluent/__init__.py
 securesubmit/tests/fluent/test_fluent_check.py
 securesubmit/tests/fluent/test_fluent_credit.py

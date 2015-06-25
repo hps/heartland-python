@@ -1,5 +1,6 @@
 import unittest
 import random
+
 from securesubmit.infrastructure import HpsArgumentException
 from securesubmit.services.fluent.gateway import HpsFluentCheckService
 from securesubmit.tests.test_data import TestServicesConfig, TestCheck

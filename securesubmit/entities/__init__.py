@@ -7,7 +7,7 @@
 """
 
 import datetime
-from securesubmit.infrastructure import HpsArgumentException
+
 from securesubmit.infrastructure.enums import HpsTransactionType
 
 

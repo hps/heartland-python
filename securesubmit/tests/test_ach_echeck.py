@@ -1,4 +1,5 @@
 import unittest
+
 from securesubmit.services.gateway import HpsCheckService
 from securesubmit.infrastructure.enums import\
     DataEntryModeType, CheckTypeType, AccountTypeType, SecCode

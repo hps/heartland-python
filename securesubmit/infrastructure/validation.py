@@ -7,6 +7,7 @@
 """
 
 import datetime
+
 from securesubmit.infrastructure.enums import HpsExceptionCodes
 from securesubmit.infrastructure import (HpsGatewayException,
                                          HpsAuthenticationException,
@@ -89,7 +90,8 @@ class HpsInputValidation(object):
             raise HpsInvalidRequestException(
                 HpsExceptionCodes.invalid_amount,
                 'Must be greater than or equal to 0.',
-                'amount')
+                'amount'
+            )
 
     @staticmethod
     def check_currency(currency, allowed_currencies=None):
@@ -125,7 +127,7 @@ class HpsGatewayResponseValidation(object):
         e = HpsGatewayResponseValidation.get_exception(rsp_code, rsp_text)
 
         if e is not None:
-            print e.message
+            # print e.message
             raise e
 
         if 'Transaction' not in response and \
@@ -188,7 +190,7 @@ class HpsIssuerResponseValidation(object):
             transaction_id, response_code, response_text)
 
         if e is not None:
-            print '{0}: {1}'.format(response_code, response_text)
+            # print '{0}: {1}'.format(response_code, response_text)
             raise e
 
     @staticmethod

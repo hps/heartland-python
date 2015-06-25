@@ -1,4 +1,5 @@
 import unittest
+
 from securesubmit.tests.test_data \
     import (TestServicesConfig,
             TestCreditCard,

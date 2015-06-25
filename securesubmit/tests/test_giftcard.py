@@ -1,4 +1,5 @@
 import unittest
+
 from securesubmit.tests.test_data \
     import (TestGiftCard, TestServicesConfig)
 from securesubmit.services.gateway import HpsGiftCardService

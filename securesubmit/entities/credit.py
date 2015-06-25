@@ -7,6 +7,7 @@
 """
 
 import re
+
 from securesubmit.entities import *
 from securesubmit.infrastructure.enums import HpsTrackDataMethod
 from securesubmit.infrastructure.validation import *

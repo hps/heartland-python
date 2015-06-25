@@ -1,6 +1,3 @@
-import xml.etree.cElementTree as Et
-from securesubmit.entities import HpsTransactionDetails, HpsDirectMarketData
-from securesubmit.entities.credit import HpsCPCData
 from securesubmit.infrastructure import HpsException
 
 

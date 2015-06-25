@@ -8,12 +8,13 @@
 import base64
 import requests
 from requests.auth import AuthBase
-
 import urllib2
 import xml.etree.cElementTree as Et
 import itertools
+
 import jsonpickle
 import xmltodict as xmltodict
+
 from securesubmit.infrastructure import *
 from securesubmit.entities.credit import *
 from securesubmit.entities.batch import *
@@ -48,11 +49,11 @@ class HpsSoapGatewayService(object):
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
             elif "_cert_" in secret_api_key:
-                self._url = ("https://posgateway.cert.secureexchange.net/"
+                self._url = ("https://cert.api2.heartlandportico.com/"
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
             else:
-                self._url = ("https://posgateway.secureexchange.net/"
+                self._url = ("https://api2.heartlandportico.com/"
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
 
@@ -68,19 +69,15 @@ class HpsSoapGatewayService(object):
         if self._is_config_invalid():
             raise HpsAuthenticationException(
                 HpsExceptionCodes.invalid_configuration,
-                ('The HPS SDK has not been properly configured. '
-                 'Please make sure to initialize the config either '
-                 'in a service constructor or in your App.config '
-                 'or Web.config file.'))
+                ('The HPS SDK has not been properly configured. Please make sure to initialize the config either '
+                 'in a service constructor or in your App.config or Web.config file.')
+            )
         try:
             # Envelope
             envelope = Et.Element("soap:Envelope")
-            envelope.set("xmlns:soap",
-                         "http://schemas.xmlsoap.org/soap/envelope/")
-            envelope.set("xmlns:xsi",
-                         "http://www.w3.org/2001/XMLSchema-instance")
-            envelope.set("xmlns:xsd",
-                         "http://www.w3.org/2001/XMLSchema")
+            envelope.set("xmlns:soap", "http://schemas.xmlsoap.org/soap/envelope/")
+            envelope.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+            envelope.set("xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
             body = Et.SubElement(envelope, "soap:Body")
 
             # Request
@@ -153,9 +150,7 @@ class HpsSoapGatewayService(object):
             namespaces = {"http://Hps.Exchange.PosGateway": None,
                           "http://schemas.xmlsoap.org/soap/envelope/": None}
 
-            response = xmltodict.parse(raw_response,
-                                       process_namespaces=True,
-                                       namespaces=namespaces)
+            response = xmltodict.parse(raw_response, process_namespaces=True, namespaces=namespaces)
 
             if ('Envelope' in response and
                     'Body' in response['Envelope'] and
@@ -473,8 +468,8 @@ class HpsSoapGatewayService(object):
 
 
 class HpsRestGatewayService(object):
-    PROD_URL = 'https://api.heartlandportico.com/payplan.v2/'
-    CERT_URL = 'https://posgateway.cert.secureexchange.net/Portico.PayPlan.v2/'
+    PROD_URL = 'https://api2.heartlandportico.com/payplan.v2/'
+    CERT_URL = 'https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/'
     UAT_URL = 'https://api-uat.heartlandportico.com/payplan.v2/'
     _config = None
     _url = None

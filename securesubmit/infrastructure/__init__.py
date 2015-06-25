@@ -87,9 +87,9 @@ class HpsCreditException(HpsException):
         self.code = code
 
         if issuer_code is not None and issuer_message is not None:
-            details = HpsCreditExceptionDetails()
-            details.issuer_response_code = issuer_code
-            details.issuer_response_text = issuer_message
+            self.details = HpsCreditExceptionDetails()
+            self.details.issuer_response_code = issuer_code
+            self.details.issuer_response_text = issuer_message
             HpsException.__init__(self, message, inner_exception)
 
 
@@ -114,9 +114,9 @@ class HpsGatewayException(HpsException):
 
         if (gateway_response_code is not None or
                 gateway_response_message is not None):
-            details = HpsGatewayExceptionDetails()
-            details.gateway_response_code = gateway_response_code
-            details.gateway_response_message = gateway_response_message
+            self.details = HpsGatewayExceptionDetails()
+            self.details.gateway_response_code = gateway_response_code
+            self.details.gateway_response_message = gateway_response_message
 
             self.message = message
             self.inner_exception = inner_exception

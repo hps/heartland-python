@@ -6,8 +6,10 @@
     :copyright: (c) Heartland Payment Systems. All rights reserved.
 """
 
-import jsonpickle
 import requests
+
+import jsonpickle
+
 from securesubmit.infrastructure import HpsException, HpsArgumentException
 from securesubmit.serialization import HpsToken, HpsCardToken, HpsSwipeToken, HpsTrackDataToken
 
@@ -33,11 +35,10 @@ class HpsTokenService(object):
         env = components[1].lower()
         if env == "prod":
             self._url = (
-                "https://api.heartlandportico.com/SecureSubmit.v1/api/token")
+                "https://api2.heartlandportico.com/SecureSubmit.v1/api/token")
         else:
             self._url = (
-                "https://posgateway.cert.secureexchange.net/"
-                "Hps.Exchange.PosGateway.Hpf.v1/api/token")
+                "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway.Hpf.v1/api/token")
 
     def _request_token(self, input_token):
         """Get a token for a given credit card."""

@@ -1,4 +1,5 @@
 import unittest
+
 from securesubmit.infrastructure import HpsArgumentException
 from securesubmit.services.fluent.gateway import HpsFluentGiftCardService
 from securesubmit.tests.test_data import TestServicesConfig, TestGiftCard

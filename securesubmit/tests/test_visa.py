@@ -1,4 +1,5 @@
 import unittest
+
 from securesubmit.entities.credit import HpsCPCData
 from securesubmit.infrastructure.enums import HpsTaxType
 from securesubmit.tests.test_data \

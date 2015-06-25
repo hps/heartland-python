@@ -1,13 +1,13 @@
-============
-SecureSubmit
-============
+==========================
+SecureSubmit -  Python SDK
+==========================
 
 SecureSubmit Python SDK for integrating with the Heartland Portico Gateway.
 
 Contributing
 ============
 
-Source is on Github:
+Source is on GitHub:
 https://github.com/hps/heartland-python
 
 1. Fork it

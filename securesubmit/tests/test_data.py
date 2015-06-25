@@ -1,4 +1,5 @@
 import copy
+
 from securesubmit.applepay.ecv1 import PaymentData
 from securesubmit.entities.credit import HpsCardHolder, HpsCreditCard, HpsTrackData, HpsEncryptionData
 from securesubmit.entities import HpsAddress

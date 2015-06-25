@@ -1,4 +1,5 @@
 import xml.etree.cElementTree as Et
+
 from securesubmit.entities import HpsTransaction
 from securesubmit.entities.check import HpsCheckResponse
 from securesubmit.entities.credit import HpsReportTransactionDetails, HpsReportTransactionSummary, HpsCharge, \
@@ -17,6 +18,7 @@ from securesubmit.infrastructure.validation import HpsIssuerResponseValidation, 
 from securesubmit.services.fluent import HpsBuilderAbstract
 from securesubmit.services.gateway import HpsSoapGatewayService
 
+
 """
     HpsFluentCreditService
 """
@@ -26,7 +28,7 @@ class HpsFluentCreditService(HpsSoapGatewayService):
     _filter_by = None
 
     def __init__(self, config=None):
-        HpsSoapGatewayService.__init__(self, config)
+        HpsSoapGatewayService.__init__(self, config, True)
 
     def with_config(self, config):
         self.services_config = config
@@ -412,6 +414,7 @@ class HpsCreditServiceAuthorizeBuilder(HpsBuilderAbstract):
 
 class HpsCreditServiceBalanceInquiryBuilder(HpsBuilderAbstract):
     _card = None
+    _card_holder = None
     _track_data = None
     _token = None
 
@@ -433,6 +436,9 @@ class HpsCreditServiceBalanceInquiryBuilder(HpsBuilderAbstract):
 
         if self._token is not None:
             card_data.append(self._service.hydrate_token_data(self._token))
+
+        if self._card_holder is not None:
+            block1.append(self._service.hydrate_card_holder_data(self._card_holder))
 
         return self._service.submit_transaction(transaction)
 

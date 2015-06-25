@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='SecureSubmit',
-    version='2.1',
+    version='2.0.6',
     author='Heartland Payment Systems',
     author_email='EntApp_DevPortal@e-hps.com',
     packages=[
@@ -16,6 +16,7 @@ setup(
         'securesubmit.tests.applepay',
         'securesubmit.tests.fluent',
         'securesubmit.tests.payplan',
+        'securesubmit.tests.certification'
     ],
     scripts=[],
     url='http://developer.heartlandpaymentsystems.com/SecureSubmit',

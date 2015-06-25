@@ -1,5 +1,6 @@
 import unittest
 import copy
+
 from securesubmit.tests.test_data import (
     TestServicesConfig,
     TestCreditCard,
