@@ -35,10 +35,10 @@ class HpsTokenService(object):
         env = components[1].lower()
         if env == "prod":
             self._url = (
-                "https://api2.heartlandportico.com/SecureSubmit.v1/api/token")
+                "https://api.heartlandportico.com/SecureSubmit.v1/api/token")
         else:
             self._url = (
-                "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway.Hpf.v1/api/token")
+                "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway.Hpf.v1/api/token")
 
     def _request_token(self, input_token):
         """Get a token for a given credit card."""

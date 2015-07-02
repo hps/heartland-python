@@ -49,11 +49,11 @@ class HpsSoapGatewayService(object):
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
             elif "_cert_" in secret_api_key:
-                self._url = ("https://cert.api2.heartlandportico.com/"
+                self._url = ("https://posgateway.cert.secureexchange.net/"
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
             else:
-                self._url = ("https://api2.heartlandportico.com/"
+                self._url = ("https://posgateway.secureexchange.net/"
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
 
@@ -468,8 +468,8 @@ class HpsSoapGatewayService(object):
 
 
 class HpsRestGatewayService(object):
-    PROD_URL = 'https://api2.heartlandportico.com/payplan.v2/'
-    CERT_URL = 'https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/'
+    PROD_URL = 'https://api.heartlandportico.com/payplan.v2/'
+    CERT_URL = 'https://posgateway.cert.secureexchange.net/Portico.PayPlan.v2/'
     UAT_URL = 'https://api-uat.heartlandportico.com/payplan.v2/'
     _config = None
     _url = None

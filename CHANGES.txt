@@ -14,3 +14,4 @@ v2.0.2 5/11/2015 -- Added Debit and EBT interfaces. Added certification scripts.
 v2.0.4 5/11/2015 -- HpsCreditException now returns issuer exceptions and removed the print statements from validation
 v2.0.5 5/11/2015 -- Adding certification tests
 v2.0.6 5/11/2015 -- HpsGatewayException also now returning details properly
+v2.1.1 6/25/2015 -- PCI 3 URL Changes version matched up with GitHub
