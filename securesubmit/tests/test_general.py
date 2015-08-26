@@ -1,5 +1,7 @@
 import unittest
 import datetime
+from securesubmit.entities.credit import HpsCreditCard
+from securesubmit.services import HpsServicesConfig
 
 from securesubmit.services.gateway import (
     HpsCreditService,
@@ -20,7 +22,7 @@ from securesubmit.tests.test_data import (
 
 
 class GeneralTests(unittest.TestCase):
-    charge_service = HpsCreditService()
+    charge_service = HpsCreditService(enable_logging=True)
 
     def test_charge_ampersand_in_customer_id(self):
         self.charge_service._config = TestServicesConfig.valid_services_config
@@ -256,4 +258,17 @@ class GeneralTests(unittest.TestCase):
 
         direct_market_data = HpsDirectMarketData()
         response = self.charge_service.capture(auth_response.transaction_id, direct_market_data=direct_market_data)
+        self.assertEquals('00', response.response_code)
+
+    def test_cvv_with_leading_zero(self):
+        self.charge_service._config = TestServicesConfig.valid_services_config
+
+        card = HpsCreditCard()
+        card.number = "4111111111111111"
+        card.exp_month = 12
+        card.exp_year = 2025
+        card.cvv = "012"
+
+        response = self.charge_service.authorize(15.15, 'usd', card)
+        self.assertIsNotNone(response)
         self.assertEquals('00', response.response_code)

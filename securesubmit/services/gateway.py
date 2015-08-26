@@ -911,6 +911,23 @@ class HpsCreditService(HpsSoapGatewayService):
         client_txn_id = _get_client_txn_id(details)
         return self._submit_transaction(transaction, client_txn_id)
 
+    def update_token_expiry(self, token, exp_month, exp_year):
+        transaction = Et.Element('ManageTokens')
+        Et.SubElement(transaction, 'TokenValue').text = token
+
+        token_actions = Et.SubElement(transaction, 'TokenActions')
+        set = Et.SubElement(token_actions, 'Set')
+
+        exp_month_element = Et.SubElement(set, 'Attribute')
+        Et.SubElement(exp_month_element, 'Name').text = 'ExpMonth'
+        Et.SubElement(exp_month_element, 'Value').text = str(exp_month)
+
+        exp_year_element = Et.SubElement(set, 'Attribute')
+        Et.SubElement(exp_year_element, 'Name').text = 'ExpYear'
+        Et.SubElement(exp_year_element, 'Value').text = str(exp_year)
+
+        return self._submit_transaction(transaction)
+
     # def balance inquiry
 
     def _submit_transaction(self, transaction, client_transaction_id=None):
@@ -953,6 +970,8 @@ class HpsCreditService(HpsSoapGatewayService):
             rvalue = HpsRecurringBilling.from_dict(rsp)
         elif transaction.tag == 'CreditAdditionalAuth':
             rvalue = HpsAuthorization.from_dict(rsp)
+        elif transaction.tag == 'ManageTokens':
+            rvalue = HpsTransaction.from_dict(rsp)
 
         return rvalue
 
