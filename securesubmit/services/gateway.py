@@ -45,11 +45,9 @@ class HpsSoapGatewayService(object):
 
         if secret_api_key is not None and secret_api_key != "":
             if "_uat_" in secret_api_key:
-                self._url = ("https://posgateway.uat.secureexchange.net/"
-                             "Hps.Exchange.PosGateway/"
-                             "PosGatewayService.asmx?wsdl")
+                self._url = 'https://api-uat.heartlandportico.com/paymentserver.v1/PosGatewayService.asmx?wsdl'
             elif "_cert_" in secret_api_key:
-                self._url = ("https://posgateway.cert.secureexchange.net/"
+                self._url = ("https://cert.api2.heartlandportico.com/"
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
             else:
@@ -137,6 +135,7 @@ class HpsSoapGatewayService(object):
 
             xml = Et.tostring(envelope).encode('utf-8')
             if self._logging:
+                print 'URL: ' + self._url
                 print 'Request: ' + xml
 
             request_headers = {'Content-type': 'text/xml; charset=UTF-8',
@@ -162,7 +161,11 @@ class HpsSoapGatewayService(object):
             # traceback.print_exc()
             raise HpsGatewayException(
                 HpsExceptionCodes.unknown_gateway_error,
-                'Unable to process transaction', None, None, e)
+                'Unable to process transaction',
+                None,
+                None,
+                e
+            )
 
     def _is_config_invalid(self):
         """Determine whether the HPS config has been initialized,
@@ -469,7 +472,7 @@ class HpsSoapGatewayService(object):
 
 class HpsRestGatewayService(object):
     PROD_URL = 'https://api.heartlandportico.com/payplan.v2/'
-    CERT_URL = 'https://posgateway.cert.secureexchange.net/Portico.PayPlan.v2/'
+    CERT_URL = 'https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/'
     UAT_URL = 'https://api-uat.heartlandportico.com/payplan.v2/'
     _config = None
     _url = None
@@ -938,11 +941,8 @@ class HpsCreditService(HpsSoapGatewayService):
                 transaction.tag == 'CreditAuth':
             amount = transaction.iter('Amt').next().text
 
-        self._process_charge_gateway_response(
-            rsp, transaction.tag, amount, 'usd')
-
-        self._process_charge_issuer_response(
-            rsp, transaction.tag, amount, 'usd')
+        self._process_charge_gateway_response(rsp, transaction.tag, amount, 'usd')
+        self._process_charge_issuer_response(rsp, transaction.tag, amount, 'usd')
 
         rvalue = None
         if transaction.tag == 'ReportTxnDetail':
@@ -977,7 +977,7 @@ class HpsCreditService(HpsSoapGatewayService):
 
     def _process_charge_issuer_response(self, response, expected_type, *args):
         transaction_id = response['Header']['GatewayTxnId']
-        transaction = response['Transaction'][expected_type]
+        transaction = response['Transaction'][expected_type] if 'Transaction' in response else None
 
         if transaction is not None:
             response_code = None

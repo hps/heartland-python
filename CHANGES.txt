@@ -16,3 +16,5 @@ v2.0.5 5/11/2015 -- Adding certification tests
 v2.0.6 5/11/2015 -- HpsGatewayException also now returning details properly
 v2.1.1 6/25/2015 -- PCI 3 URL Changes version matched up with GitHub
 v2.1.3 8/26/2015 -- Added the Manage Token call to the HpsCreditService
+v2.1.4 8/26/2015 -- Fixed bug in transaction parsing
+v2.1.5 8/27/2015 -- Fixed issuer surrounding transaction-less response messages

@@ -127,14 +127,14 @@ class HpsGatewayResponseValidation(object):
         e = HpsGatewayResponseValidation.get_exception(rsp_code, rsp_text)
 
         if e is not None:
-            # print e.message
             raise e
 
-        if 'Transaction' not in response and \
-                expected_type not in response['Transaction']:
-            raise HpsGatewayException(
-                HpsExceptionCodes.unexpected_gateway_response,
-                'Unexpected response from HPS gateway.')
+        if 'Transaction' in response:
+            if expected_type not in response['Transaction']:
+                raise HpsGatewayException(
+                    HpsExceptionCodes.unexpected_gateway_response,
+                    'Unexpected response from HPS gateway.'
+                )
 
     @staticmethod
     def get_exception(response_code, response_text):

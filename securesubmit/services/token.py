@@ -38,7 +38,7 @@ class HpsTokenService(object):
                 "https://api.heartlandportico.com/SecureSubmit.v1/api/token")
         else:
             self._url = (
-                "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway.Hpf.v1/api/token")
+                "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway.Hpf.v1/api/token")
 
     def _request_token(self, input_token):
         """Get a token for a given credit card."""

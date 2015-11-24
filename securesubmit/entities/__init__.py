@@ -61,16 +61,20 @@ class HpsTransaction(object):
         transaction.client_transaction_id = transaction._header.client_txn_id
 
         # hydrate the body
-        item = rsp['Transaction'].itervalues().next()
-        if item is not None:
-            if 'RspCode' in item:
-                transaction.response_code = item['RspCode']
+        if 'Transaction' in rsp:
+            item = rsp['Transaction'].itervalues().next()
+            if item is not None:
+                if 'RspCode' in item:
+                    transaction.response_code = item['RspCode']
 
-            if 'RspText' in item:
-                transaction.response_text = item['RspText']
+                if 'RspText' in item:
+                    transaction.response_text = item['RspText']
 
-            if 'RefNbr' in item:
-                transaction.reference_number = item['RefNbr']
+                if 'RefNbr' in item:
+                    transaction.reference_number = item['RefNbr']
+        else:
+            transaction.response_code = rsp['Header']['GatewayRspCode']
+            transaction.response_text = rsp['Header']['GatewayRspMsg']
 
         return transaction
 

@@ -972,9 +972,6 @@ class ECommerceTests(unittest.TestCase):
     """ ADVANCED FRAUD SCREENING """
 
     def test_037_fraud_prevention_sale(self):
-<<<<<<< HEAD:securesubmit/tests/certification/ecommerce.py
-        response = self.service.authorize(15000).with_card(self.test_data.visa_card()).execute()
-=======
         card = HpsCreditCard()
         card.number = '4012002000060016'
         card.exp_month = 12
@@ -982,7 +979,6 @@ class ECommerceTests(unittest.TestCase):
         card.cvv = 123
 
         response = self.service.charge(15000).with_card(card).execute()
->>>>>>> 7a0b4091566c3372e3b2e1edb53c9b2c6f8a51ef:securesubmit/tests/certification/test_ecommerce.py
         self.assertIsNotNone(response)
         self.assertEqual('00', response.response_code)
         # self.assertEqual('FR', response.issuser_response_code)

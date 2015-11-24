@@ -236,7 +236,7 @@ class TestGiftCard(object):
 
 
 class TestServicesConfig(object):
-    _service_uri = ('https://posgateway.cert.secureexchange.net'
+    _service_uri = ('https://cert.api2.heartlandportico.com'
                     '/Hps.Exchange.PosGateway'
                     '/PosGatewayService.asmx?wsdl')
 

@@ -53,7 +53,7 @@ class HpsConfiguration:
     soap_service_uri = None
 
     def __init__(self):
-        self.soap_service_uri = ('https://posgateway.cert.secureexchange.net'
+        self.soap_service_uri = ('https://cert.api2.heartlandportico.com'
                                  '/Hps.Exchange.PosGateway'
                                  '/PosGatewayService.asmx?wsdl')
 
