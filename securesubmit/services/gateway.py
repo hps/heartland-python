@@ -51,7 +51,7 @@ class HpsSoapGatewayService(object):
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
             else:
-                self._url = ("https://posgateway.secureexchange.net/"
+                self._url = ("https://cert.api2.heartlandportico.com/"
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
 
