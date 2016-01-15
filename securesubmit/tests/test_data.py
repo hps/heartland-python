@@ -112,7 +112,7 @@ class TestCreditCard(object):
     valid_visa = HpsCreditCard()
     valid_visa.cvv = 123
     valid_visa.exp_month = 12
-    valid_visa.exp_year = 2015
+    valid_visa.exp_year = 2025
     valid_visa.number = "4012002000060016"
 
     # valid visa no cvv
@@ -167,7 +167,7 @@ class TestCreditCard(object):
     valid_mastercard = HpsCreditCard()
     valid_mastercard.cvv = 123
     valid_mastercard.exp_month = 12
-    valid_mastercard.exp_year = 2015
+    valid_mastercard.exp_year = 2025
     valid_mastercard.number = "5473500000000014"
 
     # valid mastercard no cvv
@@ -178,7 +178,7 @@ class TestCreditCard(object):
     valid_discover = HpsCreditCard()
     valid_discover.cvv = 123
     valid_discover.exp_month = 12
-    valid_discover.exp_year = 2015
+    valid_discover.exp_year = 2025
     valid_discover.number = "6011000990156527"
 
     # valid discover no cvv
@@ -189,7 +189,7 @@ class TestCreditCard(object):
     valid_amex = HpsCreditCard()
     valid_amex.cvv = 1234
     valid_amex.exp_month = 12
-    valid_amex.exp_year = 2015
+    valid_amex.exp_year = 2025
     valid_amex.number = "372700699251018"
 
     # valid amex no cvv
@@ -200,7 +200,7 @@ class TestCreditCard(object):
     valid_jcb = HpsCreditCard()
     valid_jcb.cvv = 123
     valid_jcb.exp_month = 12
-    valid_jcb.exp_year = 2015
+    valid_jcb.exp_year = 2025
     valid_jcb.number = "3566007770007321"
 
     # valid jcb no cvv
@@ -211,7 +211,7 @@ class TestCreditCard(object):
     invalid_card = HpsCreditCard()
     invalid_card.cvv = 123
     invalid_card.exp_month = 12
-    invalid_card.exp_year = 2015
+    invalid_card.exp_year = 2025
     invalid_card.number = "12345"
 
 
@@ -242,8 +242,7 @@ class TestServicesConfig(object):
 
     valid_services_config = HpsServicesConfig()
     valid_services_config.credential_token = 'pkapi_cert_P6dRqs1LzfWJ6HgGVZ'
-    # valid_services_config.secret_api_key = 'skapi_cert_MYl2AQAowiQAbLp5JesGKh7QFkcizOP2jcX9BrEMqQ'
-    valid_services_config.secret_api_key = 'skapi_cert_MbZ7AQCcHkkA7GHLlFvZ-vLLL6VuGZE8vH9SFMNVrw'
+    valid_services_config.secret_api_key = 'skapi_cert_MYl2AQAowiQAbLp5JesGKh7QFkcizOP2jcX9BrEMqQ'
     valid_services_config.service_uri = _service_uri
 
     valid_e_gold_config = HpsServicesConfig()

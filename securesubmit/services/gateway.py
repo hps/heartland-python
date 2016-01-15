@@ -51,7 +51,7 @@ class HpsSoapGatewayService(object):
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
             else:
-                self._url = ("https://posgateway.secureexchange.net/"
+                self._url = ("https://api2.heartlandportico.com/"
                              "Hps.Exchange.PosGateway/"
                              "PosGatewayService.asmx?wsdl")
 
@@ -139,8 +139,7 @@ class HpsSoapGatewayService(object):
                 print 'Request: ' + xml
 
             request_headers = {'Content-type': 'text/xml; charset=UTF-8',
-                               'Content-length': str(len(xml)),
-                               'Host': 'posgateway.cert.secureexchange.net'}
+                               'Content-length': str(len(xml))}
             request = urllib2.Request(self._url, xml, request_headers)
             raw_response = urllib2.urlopen(request).read()
             if self._logging:
@@ -471,7 +470,7 @@ class HpsSoapGatewayService(object):
 
 
 class HpsRestGatewayService(object):
-    PROD_URL = 'https://api.heartlandportico.com/payplan.v2/'
+    PROD_URL = 'https://api2.heartlandportico.com/payplan.v2/'
     CERT_URL = 'https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/'
     UAT_URL = 'https://api-uat.heartlandportico.com/payplan.v2/'
     _config = None
