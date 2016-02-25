@@ -6,7 +6,7 @@ from securesubmit.entities import HpsAddress
 from securesubmit.entities.check import HpsCheck, HpsCheckHolder
 from securesubmit.entities.gift import HpsGiftCard
 from securesubmit.infrastructure.enums import CheckTypeType, AccountTypeType, SecCode, HpsTrackDataMethod
-from securesubmit.services import HpsServicesConfig
+from securesubmit.services import HpsServicesConfig, HpsPayPlanServiceConfig
 
 
 class TestCardHolder(object):
@@ -253,7 +253,7 @@ class TestServicesConfig(object):
     valid_e_gold_config.password = '$Test1234'
     valid_e_gold_config.service_uri = _service_uri
 
-    valid_pay_plan_config = HpsServicesConfig()
+    valid_pay_plan_config = HpsPayPlanServiceConfig()
     valid_pay_plan_config.secret_api_key = 'skapi_uat_MY5OAAAUrmIFvLDRpO_ufLlFQkgg0Rms2G8WoI1THQ'
 
 

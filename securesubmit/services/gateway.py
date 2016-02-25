@@ -7,8 +7,8 @@
 """
 import base64
 import requests
-from requests.auth import AuthBase
 import urllib2
+import urllib
 import xml.etree.cElementTree as Et
 import itertools
 
@@ -21,6 +21,7 @@ from securesubmit.entities.batch import *
 from securesubmit.entities.check import *
 from securesubmit.entities.gift import *
 from securesubmit.entities.payplan import *
+from securesubmit.entities.orca import *
 from securesubmit.infrastructure.enums import TypeOfPaymentDataType, EncodingType
 
 
@@ -470,11 +471,8 @@ class HpsSoapGatewayService(object):
 
 
 class HpsRestGatewayService(object):
-    PROD_URL = 'https://api2.heartlandportico.com/payplan.v2/'
-    CERT_URL = 'https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/'
-    UAT_URL = 'https://api-uat.heartlandportico.com/payplan.v2/'
     _config = None
-    _url = None
+    _url = ''
     _limit = None
     _offset = None
     _search_fields = None
@@ -484,12 +482,8 @@ class HpsRestGatewayService(object):
         self._config = config
         self._logging = enable_logging
 
-        if '_uat_' in self._config.secret_api_key:
-            self._url = self.UAT_URL
-        elif '_cert_' in self._config.secret_api_key:
-            self._url = self.CERT_URL
-        else:
-            self._url = self.PROD_URL
+        config.validate()
+        self._url = config.service_uri()
 
     def page(self, limit, offset):
         self._limit = limit
@@ -501,34 +495,32 @@ class HpsRestGatewayService(object):
         self._search_fields = search_fields
         return self
 
-    def do_request(self, verb, endpoint, data=None):
+    def do_request(self, verb, endpoint, data=None, additional_headers=None):
         url = self._url + endpoint
 
         if self._limit is not None and self._offset is not None:
             url += '?limit=' + str(self._limit) + '&offset=' + str(self._offset)
 
-        class BasicAuth(AuthBase):
-            def __init__(self, secret_api_key):
-                self.secret_api_key = secret_api_key
+        headers = self._config.get_headers(additional_headers)
+        basic_auth = self._config.basic_authorization()
 
-            def __call__(self, r):
-                r.headers['Authorization'] = 'Basic ' + base64.b64encode(self.secret_api_key)
-                return r
-
-        headers = {'content-type': 'application/json; charset=utf-8'}
         request_method = getattr(requests, verb.lower())
         if data is not None:
             encoded_data = jsonpickle.encode(data, False, False, True)
             if self._logging:
                 print 'Request: ' + encoded_data
+
             response = request_method(
                 url,
                 data=encoded_data,
                 headers=headers,
-                auth=BasicAuth(self._config.secret_api_key)
+                auth=basic_auth,
+                verify=False
             )
         else:
-            response = request_method(url, headers=headers, auth=BasicAuth(self._config.secret_api_key))
+            if self._logging:
+                print 'Request: ' + url
+            response = request_method(url, headers=headers, auth=basic_auth)
 
         if self._logging:
             print 'Response: ' + response.content
@@ -1457,6 +1449,51 @@ class HpsPayPlanService(HpsRestGatewayService):
         schedule_id = schedule if not isinstance(schedule, HpsPayPlanSchedule) else schedule.schedule_key
         response = self.do_request('delete', 'schedules/' + str(schedule_id), {'forceDelete': force_delete})
         return self.hydrate_response(HpsPayPlanSchedule, response)
+
+
+class HpsOrcaService(HpsRestGatewayService):
+    def __init__(self, config=None, enable_logging=False):
+        HpsRestGatewayService.__init__(self, config, enable_logging)
+
+    def device_activation(self, device_activation_request):
+        device_activation_request.application_id = self._config.application_id
+        device_activation_request.hardware_type_name = self._config.hardware_type_name
+        device_activation_request.software_version = self._config.software_version
+        device_activation_request.configuration_name = self._config.configuration_name
+        device_activation_request.peripheral_name = self._config.peripheral_name
+        device_activation_request.peripheral_software = self._config.peripheral_software
+
+        response = self.do_request('POST', 'deviceActivation', device_activation_request.get_json_data())
+        return self.hydrate_response(DeviceActivationResponse, response)
+
+    def device_activation_key(self, merchant_id, activation_code):
+        args = {
+            'merchantId': merchant_id,
+            'applicationId': self._config.application_id,
+            'activationCode': activation_code
+        }
+        response = self.do_request('GET', 'deviceActivationKey?' + urllib.urlencode(args))
+        return self.hydrate_response(DeviceActivationKeyResponse, response)
+
+    def device_api_key(self, site_id, device_id, license_id, username, password):
+        headers = {
+            'siteId':site_id,
+            'deviceId':device_id,
+            'licenseId':license_id,
+            'Authentication': 'Basic ' + base64.b64encode(username + ':' + password)
+        }
+        response = self.do_request('POST', 'deviceApiKey', additional_headers=headers)
+        return self.hydrate_response(DeviceApiKeyResponse, response)
+
+    def device_parameters(self, secret_api_key, device_id):
+        headers = {'Authentication': 'Basic ' + base64.b64encode(secret_api_key)}
+        args = {
+            'deviceId': device_id,
+            'applicationId': self._config.application_id,
+            'hardwareTypeName': self._config.hardware_type_name
+        }
+        response = self.do_request('GET', 'deviceParameters?' + urllib.urlencode(args), additional_headers=headers)
+        return self.hydrate_response(DeviceParametersResponse, response)
 
 
 def _hydrate_gift_card_data(gift_card, element_name='CardData'):
