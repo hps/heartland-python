@@ -13,10 +13,14 @@ from securesubmit.tests.test_data import TestServicesConfig, TestCreditCard, Tes
 class FluentCreditTests(unittest.TestCase):
     service = HpsFluentCreditService().with_config(TestServicesConfig.valid_services_config)
     pp_service = HpsPayPlanService(TestServicesConfig.valid_pay_plan_config)
-    schedule = pp_service.page(1, 0).find_all_schedules({
-        'scheduleStatus': HpsPayPlanScheduleStatus.ACTIVE,
-        'scheduleIdentifier': 'SecureSubmit'
-    }).results[0]
+    schedule = None
+    try:
+        schedule = pp_service.page(1, 0).find_all_schedules({
+            'scheduleStatus': HpsPayPlanScheduleStatus.ACTIVE,
+            'scheduleIdentifier': 'SecureSubmit'
+        }).results[0]
+    except IndexError:
+        pass
 
     def test_authorize_and_capture(self):
         auth_response = self.service.authorize(10)\
@@ -448,6 +452,9 @@ class FluentCreditTests(unittest.TestCase):
         self.assertEqual('00', void.response_code)
 
     def test_recurring_one_time_with_card(self):
+        if self.schedule is None:
+            self.skipTest('Schedule was none')
+
         recurring = self.service.recurring(10)\
             .with_schedule(self.schedule)\
             .with_card(TestCreditCard.valid_visa)\
@@ -460,6 +467,9 @@ class FluentCreditTests(unittest.TestCase):
         self.assertEqual('00', recurring.response_code)
 
     def test_recurring_one_time_with_token(self):
+        if self.schedule is None:
+            self.skipTest('Schedule was none')
+
         token_service = HpsTokenService(TestServicesConfig.valid_services_config.credential_token)
         token_response = token_service.get_token(TestCreditCard.valid_visa)
         self.assertIsNotNone(token_response)
@@ -477,6 +487,9 @@ class FluentCreditTests(unittest.TestCase):
         self.assertEqual('00', recurring.response_code)
 
     def test_recurring_with_card(self):
+        if self.schedule is None:
+            self.skipTest('Schedule was none')
+
         recurring = self.service.recurring(10)\
             .with_schedule(self.schedule)\
             .with_card(TestCreditCard.valid_visa)\
@@ -488,6 +501,9 @@ class FluentCreditTests(unittest.TestCase):
         self.assertEqual('00', recurring.response_code)
 
     def test_recurring_with_token(self):
+        if self.schedule is None:
+            self.skipTest('Schedule was none')
+
         token_service = HpsTokenService(TestServicesConfig.valid_services_config.credential_token)
         token_response = token_service.get_token(TestCreditCard.valid_visa)
         self.assertIsNotNone(token_response)

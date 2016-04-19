@@ -7,16 +7,19 @@ from securesubmit.entities.payplan import HpsPayPlanCustomer, HpsPayPlanPaymentM
 from securesubmit.infrastructure import HpsException, HpsCreditException, HpsCheckException
 from securesubmit.infrastructure.enums import HpsPayPlanCustomerStatus, HpsPayPlanPaymentMethodType, \
     HpsPayPlanScheduleStatus, HpsPayPlanScheduleFrequency, HpsPayPlanScheduleDuration
-from securesubmit.services import HpsServicesConfig
+from securesubmit.services import HpsServicesConfig, HpsPayPlanServiceConfig
 from securesubmit.services.fluent.gateway import HpsFluentCreditService, HpsFluentCheckService
 from securesubmit.services.gateway import HpsPayPlanService, HpsBatchService
 
 
 class RecurringTests(unittest.TestCase):
+    pp_config = HpsPayPlanServiceConfig()
+    pp_config.secret_api_key = 'skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A'
+    service = HpsPayPlanService(pp_config, True)
+
     config = HpsServicesConfig()
     config.secret_api_key = 'skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A'
 
-    service = HpsPayPlanService(config, True)
     batch_service = HpsBatchService(config)
     credit_service = HpsFluentCreditService().with_config(config)
     check_service = HpsFluentCheckService().with_config(config)

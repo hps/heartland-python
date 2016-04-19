@@ -15,7 +15,7 @@ class CheckTests(unittest.TestCase):
         check = TestCheck.certification
         check.data_entry_mode = DataEntryModeType.swipe
 
-        check_service = HpsCheckService(TestServicesConfig.valid_services_config)
+        check_service = HpsCheckService(TestServicesConfig.valid_services_config, True)
         response = check_service.sale(check, 11.00)
         self.assertIsNotNone(response)
         self.assertEqual('0', response.response_code)

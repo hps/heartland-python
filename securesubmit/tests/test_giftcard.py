@@ -6,8 +6,7 @@ from securesubmit.services.gateway import HpsGiftCardService
 
 
 class GiftCardTests(unittest.TestCase):
-    gift_service = HpsGiftCardService(
-        TestServicesConfig.valid_services_config)
+    gift_service = HpsGiftCardService(TestServicesConfig.valid_services_config, True)
 
     def test_gift_card_activate(self):
         response = self.gift_service.activate(

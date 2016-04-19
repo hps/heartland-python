@@ -218,19 +218,19 @@ class TestCreditCard(object):
 class TestGiftCard(object):
     # valid gift card
     valid_gift_card_manual = HpsGiftCard()
-    valid_gift_card_manual.number = "5022440000000000098"
+    valid_gift_card_manual.card_number = "5022440000000000098"
     valid_gift_card_manual.exp_month = 12
     valid_gift_card_manual.exp_year = 39
 
     # another valid gift card
     valid_gift_card_manual_2 = HpsGiftCard()
-    valid_gift_card_manual_2.number = "5022440000000000007"
+    valid_gift_card_manual_2.card_number = "5022440000000000007"
     valid_gift_card_manual_2.exp_month = 12
     valid_gift_card_manual_2.exp_year = 39
 
     # invalid gift card
     invalid_gift_card_manual = HpsGiftCard()
-    invalid_gift_card_manual.number = "1234"
+    invalid_gift_card_manual.card_number = "1234"
     invalid_gift_card_manual.exp_month = 12
     invalid_gift_card_manual.exp_year = 39
 

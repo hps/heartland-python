@@ -293,9 +293,20 @@ class HpsPayPlanSchedule(HpsPayPlanResource):
         self.email_receipt = 'Never'
         self.email_advance_notice = 'No'
 
+    def get_json_data(self):
+        fields = dict()
+
+        editable_fields = self.get_editable_fields(self.schedule_started)
+        for k in self.__dict__.keys():
+            value = self.__getattribute__(k)
+            if k in editable_fields and value is not None:
+                fields[self.to_camel_case(k)] = value
+
+        return fields
+
     @staticmethod
-    def get_editable_fields():
-        return {
+    def get_editable_fields(is_started=False):
+        fields = {
             'schedule_name',
             'schedule_status',
             'device_id',
@@ -309,12 +320,22 @@ class HpsPayPlanSchedule(HpsPayPlanResource):
             'email_receipt',
             'email_advance_notice',
             'processing_date_info',
+        }
+
+        started_fields = {
             'schedule_identifier',
             'start_date',
             'frequency',
             'duration',
-            'next_processing_date',
         }
+
+        not_started_fields = {
+            'next_processing_date'
+        }
+
+        if is_started:
+            return fields.union(not_started_fields)
+        else: return fields.union(started_fields)
 
     @classmethod
     def from_dict(cls, rsp):

@@ -11,7 +11,7 @@ from securesubmit.tests.test_data import TestServicesConfig
 
 
 class PayPlanScheduleTests(unittest.TestCase):
-    service = HpsPayPlanService(TestServicesConfig.valid_pay_plan_config)
+    service = HpsPayPlanService(TestServicesConfig.valid_pay_plan_config, True)
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
     payment_method = service.page(1, 0).find_all_payment_methods(
         {'customerIdentifier': 'SecureSubmit',

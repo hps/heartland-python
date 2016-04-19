@@ -38,7 +38,7 @@ class HpsSoapGatewayService(object):
 
         self._url = self._base_config.soap_service_uri
         if self._config is not None:
-            self._url = self._config.soap_service_uri
+            self._url = self._config.service_uri
 
         secret_api_key = self._base_config.secret_api_key
         if self._config is not None:
@@ -1157,8 +1157,8 @@ class HpsCheckService(HpsSoapGatewayService):
 
 
 class HpsGiftCardService(HpsSoapGatewayService):
-    def __init__(self, config=None):
-        HpsSoapGatewayService.__init__(self, config)
+    def __init__(self, config=None, enable_logging=False):
+        HpsSoapGatewayService.__init__(self, config, enable_logging)
 
     def activate(self, amount, currency, gift_card):
         HpsInputValidation.check_amount(amount)
@@ -1498,10 +1498,10 @@ class HpsOrcaService(HpsRestGatewayService):
 
 def _hydrate_gift_card_data(gift_card, element_name='CardData'):
     card_element = Et.Element(element_name)
-    if gift_card.is_track_data is True:
-        Et.SubElement(card_element, 'TrackData').text = gift_card.number
-    else:
-        Et.SubElement(card_element, 'CardNbr').text = gift_card.number
+    if gift_card.track_data is not None:
+        Et.SubElement(card_element, 'TrackData').text = gift_card.track_data
+    elif gift_card.card_number is not None:
+        Et.SubElement(card_element, 'CardNbr').text = gift_card.card_number
 
     if gift_card.encryption_data is not None:
         data = gift_card.encryption_data
@@ -1643,10 +1643,10 @@ def _hydrate_consumer_info(check):
         phone_number = Et.SubElement(consumer_info, 'PhoneNumber')
         phone_number.text = check.check_holder.phone
 
-    if check.check_holder.ssl4 is not None or check.check_holder.dob_year is not None:
+    if check.check_holder.ssnl4 is not None or check.check_holder.dob_year is not None:
         identity_element = Et.SubElement(consumer_info, 'IdentityInfo')
 
-        if check.check_holder.ssl4:
+        if check.check_holder.ssnl4:
             Et.SubElement(identity_element, 'SSNL4').text = check.check_holder.ssl4
 
         if check.check_holder.dob_year:
