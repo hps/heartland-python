@@ -1,8 +1,10 @@
 import unittest
 
+from securesubmit.entities.credit import HpsCreditCard
 from securesubmit.entities.payplan import HpsPayPlanPaymentMethod
 from securesubmit.infrastructure.enums import HpsPayPlanPaymentMethodStatus, HpsPayPlanPaymentMethodType
 from securesubmit.services.gateway import HpsPayPlanService
+from securesubmit.services.token import HpsTokenService
 from securesubmit.tests.test_data import TestServicesConfig
 
 
@@ -17,6 +19,31 @@ class PayPlanPaymentMethodTests(unittest.TestCase):
         payment_method.payment_method_type = HpsPayPlanPaymentMethodType.CREDIT_CARD
         payment_method.name_on_account = 'Bill Johnson'
         payment_method.account_number = 4111111111111111
+        payment_method.expiration_date = '0120'
+        payment_method.country = 'USA'
+
+        response = self.service.add_payment_method(payment_method)
+        self.assertIsNotNone(response)
+        self.assertIsNotNone(response.payment_method_key)
+
+    def test_add_with_token(self):
+        token_service = HpsTokenService(TestServicesConfig.valid_pay_plan_config.public_key)
+
+        card = HpsCreditCard()
+        card.number = 4111111111111111
+        card.exp_month = '12'
+        card.exp_year = '2020'
+        card.cvv = '123'
+
+        token = token_service.get_token(card)
+        if token.token_value is None:
+            self.fail("cannot generate token")
+
+        payment_method = HpsPayPlanPaymentMethod()
+        payment_method.customer_key = self.customer.customer_key
+        payment_method.payment_method_type = HpsPayPlanPaymentMethodType.CREDIT_CARD
+        payment_method.name_on_account = 'Bill Johnson'
+        payment_method.payment_token = token.token_value
         payment_method.expiration_date = '0120'
         payment_method.country = 'USA'
 

@@ -1399,7 +1399,10 @@ class HpsPayPlanService(HpsRestGatewayService):
     def _add_credit_card(self, payment_method):
         data = payment_method.get_json_data()
         data['customerKey'] = payment_method.customer_key
-        data['accountNumber'] = payment_method.account_number
+        if hasattr(payment_method, 'account_number'):
+            data['accountNumber'] = payment_method.account_number
+        elif hasattr(payment_method, 'payment_token'):
+            data['paymentToken'] = payment_method.payment_token
         return self.do_request('post', 'paymentMethodsCreditCard', data)
 
     def _edit_credit_card(self, payment_method):
