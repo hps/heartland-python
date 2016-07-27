@@ -1466,7 +1466,7 @@ class ECommerceCheckTests(unittest.TestCase):
     config.version_number = '0001'
 
     batch_service = HpsBatchService(config)
-    service = HpsFluentCheckService().with_config(config)
+    service = HpsFluentCheckService(config, True)
 
     e_bronze = False
     e_silver = True

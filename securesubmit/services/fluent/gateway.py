@@ -1541,12 +1541,15 @@ class HpsDebitServiceSaleBuilder(HpsBuilderAbstract):
 
 
 class HpsFluentCheckService(HpsSoapGatewayService):
-    def __init__(self, config=None):
-        HpsSoapGatewayService.__init__(self, config)
+    def __init__(self, config=None, enable_logging=False):
+        HpsSoapGatewayService.__init__(self, config, enable_logging)
 
     def with_config(self, config):
         self.services_config = config
         return self
+
+    def with_enable_logging(self, enable):
+        self._logging = enable
 
     def override(self):
         return HpsCheckServiceOverrideBuilder(self)

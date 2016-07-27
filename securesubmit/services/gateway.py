@@ -21,7 +21,7 @@ from securesubmit.entities.batch import *
 from securesubmit.entities.check import *
 from securesubmit.entities.gift import *
 from securesubmit.entities.payplan import *
-from securesubmit.entities.orca import *
+from securesubmit.entities.activation import *
 from securesubmit.infrastructure.enums import TypeOfPaymentDataType, EncodingType
 
 
@@ -1454,49 +1454,17 @@ class HpsPayPlanService(HpsRestGatewayService):
         return self.hydrate_response(HpsPayPlanSchedule, response)
 
 
-class HpsOrcaService(HpsRestGatewayService):
+class HpsActivationService(HpsRestGatewayService):
     def __init__(self, config=None, enable_logging=False):
         HpsRestGatewayService.__init__(self, config, enable_logging)
-
-    def device_activation(self, device_activation_request):
-        device_activation_request.application_id = self._config.application_id
-        device_activation_request.hardware_type_name = self._config.hardware_type_name
-        device_activation_request.software_version = self._config.software_version
-        device_activation_request.configuration_name = self._config.configuration_name
-        device_activation_request.peripheral_name = self._config.peripheral_name
-        device_activation_request.peripheral_software = self._config.peripheral_software
-
-        response = self.do_request('POST', 'deviceActivation', device_activation_request.get_json_data())
-        return self.hydrate_response(DeviceActivationResponse, response)
 
     def device_activation_key(self, merchant_id, activation_code):
         args = {
             'merchantId': merchant_id,
-            'applicationId': self._config.application_id,
             'activationCode': activation_code
         }
         response = self.do_request('GET', 'deviceActivationKey?' + urllib.urlencode(args))
         return self.hydrate_response(DeviceActivationKeyResponse, response)
-
-    def device_api_key(self, site_id, device_id, license_id, username, password):
-        headers = {
-            'siteId':site_id,
-            'deviceId':device_id,
-            'licenseId':license_id,
-            'Authentication': 'Basic ' + base64.b64encode(username + ':' + password)
-        }
-        response = self.do_request('POST', 'deviceApiKey', additional_headers=headers)
-        return self.hydrate_response(DeviceApiKeyResponse, response)
-
-    def device_parameters(self, secret_api_key, device_id):
-        headers = {'Authentication': 'Basic ' + base64.b64encode(secret_api_key)}
-        args = {
-            'deviceId': device_id,
-            'applicationId': self._config.application_id,
-            'hardwareTypeName': self._config.hardware_type_name
-        }
-        response = self.do_request('GET', 'deviceParameters?' + urllib.urlencode(args), additional_headers=headers)
-        return self.hydrate_response(DeviceParametersResponse, response)
 
 
 def _hydrate_gift_card_data(gift_card, element_name='CardData'):

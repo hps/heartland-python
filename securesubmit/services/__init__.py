@@ -51,34 +51,20 @@ class _HpsRestServiceConfig(_HpsConfigInterface):
         return None
 
 
-class HpsOrcaServiceConfig(_HpsRestServiceConfig):
-    hardware_type_name = None
-    application_id = None
-    software_version = None
-    configuration_name = None
-    peripheral_name = None
-    peripheral_software = None
-    is_test = False
+class HpsActivationServiceConfig(_HpsRestServiceConfig):
+    _is_test = False
 
-    def __init__(self):
+    def __init__(self, is_test=False):
+        self._is_test = is_test
         self.UAT_URL = 'https://huds.test.e-hps.com/config-server/v1/'
         self.CERT_URL = 'https://huds.test.e-hps.com/config-server/v1/'
         self.PROD_URL = 'https://huds.prod.e-hps.com/config-server/v1/'
 
     def service_uri(self):
-        return self.CERT_URL if self.is_test else self.PROD_URL
+        return self.CERT_URL if self._is_test else self.PROD_URL
 
     def validate(self):
-        if self.hardware_type_name is None:
-            raise HpsException('Invalid Configuration: Hardware Type Name cannot be None')
-        elif self.application_id is None:
-            raise HpsException('Invalid Configuration: Application Id cannot be None')
-
-    def has_emv_data(self):
-        return (self.software_version is not None
-                or self.configuration_name is not None
-                or self.peripheral_name is not None
-                or self. peripheral_software is not None)
+        pass
 
 
 class HpsPayPlanServiceConfig(_HpsRestServiceConfig):
