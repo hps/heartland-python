@@ -123,11 +123,13 @@ class HpsPayPlanCustomerStatus(Enum):
     INACTIVE = 'Inactive'
 
 
-class HpsPayPlanPaymentMethodStatus(HpsPayPlanCustomerStatus):
+class HpsPayPlanPaymentMethodStatus(Enum):
     INVALID = 'Invalid'
     REVOKED = 'Revoked'
     EXPIRED = 'Expired'
     LOST_STOLEN = 'Lost/Stolen'
+    ACTIVE = 'Active'
+    INACTIVE = 'Inactive'
 
 
 class HpsPayPlanPaymentMethodType(Enum):
@@ -151,8 +153,10 @@ class HpsPayPlanScheduleFrequency(Enum):
     ANNUALLY = 'Annually'
 
 
-class HpsPayPlanScheduleStatus(HpsPayPlanCustomerStatus):
+class HpsPayPlanScheduleStatus(Enum):
     FAILED = 'FAILED'
+    ACTIVE = 'Active'
+    INACTIVE = 'Inactive'
 
 
 class HpsTrackDataMethod(Enum):
