@@ -103,6 +103,23 @@ class GeneralTests(unittest.TestCase):
         except HpsGatewayException, e:
             self.fail(e.message)
 
+    def test_charge_secretkey_trimming(self):
+        config = HpsServicesConfig()
+        config.secret_api_key = '   skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A     '
+        self.charge_service._config = config
+        charge_amount = 5
+
+        try:
+            response = self.charge_service.charge(
+                charge_amount, "usd",
+                TestCreditCard.valid_visa,
+                TestCardHolder.valid_card_holder)
+            self.assertIsNotNone(response)
+            self.assertEqual('00', response.response_code)
+        except HpsGatewayException, e:
+            self.fail(e.message)
+
+
     def test_charge_invalid_amount(self):
         charge_amount = -5
         self.charge_service._config = None

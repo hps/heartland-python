@@ -58,7 +58,7 @@ class RecurringTests(unittest.TestCase):
 
     """ Clean up """
 
-    def test_000_clean_up(self):
+    def test_999_clean_up(self):
         #  remove the schedules
         sch_results = self.service.page(500, 0).find_all_schedules()
         for schedule in sch_results.results:
@@ -82,6 +82,7 @@ class RecurringTests(unittest.TestCase):
                 self.service.delete_customer(c, True)
             except HpsException:
                 pass
+        pass
 
     """ Customer Setup """
 
@@ -414,7 +415,7 @@ class RecurringTests(unittest.TestCase):
 
     """ CLOSE BATCH """
 
-    def test_999_close_batch(self):
+    def test_998_close_batch(self):
         try:
             response = self.batch_service.close_batch()
             if response is None:
