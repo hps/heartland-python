@@ -6,7 +6,7 @@ from securesubmit.entities.credit import HpsReportTransactionDetails, HpsReportT
     HpsAccountVerify, HpsAuthorization, HpsRefund, HpsReversal, HpsVoid, HpsCPCEdit, HpsRecurringBilling, \
     HpsOfflineAuthorization
 from securesubmit.entities.debit import HpsDebitAuthorization
-from securesubmit.entities.etb import HpsEbtAuthorization
+from securesubmit.entities.ebt import HpsEbtAuthorization
 from securesubmit.entities.gift import HpsGiftCardActivate, HpsGiftCardAddValue, HpsGiftCardAlias, HpsGiftCardBalance, \
     HpsGiftCardDeactivate, HpsGiftCardReplace, HpsGiftCardReward, HpsGiftCardSale, HpsGiftCardVoid, HpsGiftCardReversal
 from securesubmit.entities.payplan import HpsPayPlanSchedule
