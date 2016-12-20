@@ -215,6 +215,9 @@ class HpsReportTransactionDetails(HpsAuthorization):
         if 'RspText' in report_response['Data']:
             details.response_text = report_response['Data']['RspText']
 
+        if 'PaymentMethodKey' in report_response['Data']:
+            details.payment_method_key = report_response['Data']['PaymentMethodKey']
+
         if 'TokenizationMsg' in report_response['Data']:
             details.token_data = HpsTokenData()
             details.token_data.token_rsp_msg = \
