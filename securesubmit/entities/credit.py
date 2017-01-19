@@ -144,12 +144,14 @@ class HpsRefund(HpsTransaction):
 
 
 class HpsReportTransactionDetails(HpsAuthorization):
+    authorization_code = None
     issuer_transaction_id = None
     issuer_validation_code = None
     original_transaction_id = None
     masked_card_number = None
     settlement_amount = None
     transaction_type = None
+    transaction_status = None
     transaction_utc_date = None
     exceptions = None
     memo = None
@@ -185,6 +187,9 @@ class HpsReportTransactionDetails(HpsAuthorization):
         if 'AuthAmt' in report_response['Data']:
             details.authorized_amount = report_response['Data']['AuthAmt']
 
+        if 'AuthCode' in report_response['Data']:
+            details.authorization_code = report_response['Data']['AuthCode']
+
         if 'AVSRsltCode' in report_response['Data']:
             details.avs_result_code = report_response['Data']['AVSRsltCode']
 
@@ -209,6 +214,12 @@ class HpsReportTransactionDetails(HpsAuthorization):
         if 'RefNbr' in report_response['Data']:
             details.reference_number = report_response['Data']['RefNbr']
 
+        if 'ReturnAmtInfo' in report_response['Data']:
+            details.returned_amount = report_response['Data']['ReturnAmtInfo']
+
+        if 'ReversalAmtInfo' in report_response['Data']:
+            details.reversed_amount = report_response['Data']['ReversalAmtInfo']
+
         if 'RspCode' in report_response['Data']:
             details.response_code = report_response['Data']['RspCode']
 
@@ -219,6 +230,9 @@ class HpsReportTransactionDetails(HpsAuthorization):
             details.token_data = HpsTokenData()
             details.token_data.token_rsp_msg = \
                 report_response['Data']['TokenizationMsg']
+
+        if 'TxnStatus' in report_response['Data']:
+            details.transaction_status = report_response['Data']['TxnStatus']
 
         if 'AdditionalTxnFields' in report_response['Data']:
             if 'Description' in report_response['Data']['AdditionalTxnFields']:
