@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='SecureSubmit',
-    version='2.5.6',
+    version='2.5.7',
     author='Heartland Payment Systems',
     author_email='EntApp_DevPortal@e-hps.com',
     packages=[

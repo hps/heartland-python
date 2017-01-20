@@ -20,3 +20,4 @@ v2.1.4 8/26/2015 -- Fixed bug in transaction parsing
 v2.1.5 8/27/2015 -- Fixed issuer surrounding transaction-less response messages
 v2.4.1 11/24/2015 -- Updated URLS to TLS1.1+ end points
 v2.5.1 2.12.2015 -- Updated expired test card information
+v2.5.7 19/01/2017 -- Adding authorization_code, returned_amount, reversed_amount and transaction_status to HpsReportTransactionDetails
