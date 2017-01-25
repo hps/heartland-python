@@ -16,7 +16,7 @@ class FluentCreditTests(unittest.TestCase):
     schedule = None
     try:
         schedule = pp_service.page(1, 0).find_all_schedules({
-            'scheduleStatus': HpsPayPlanScheduleStatus.ACTIVE,
+            'scheduleStatus': 'Active',
             'scheduleIdentifier': 'SecureSubmit'
         }).results[0]
     except IndexError:

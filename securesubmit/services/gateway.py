@@ -6,11 +6,12 @@
     :copyright: (c) Heartland Payment Systems. All rights reserved.
 """
 import base64
-import requests
-import urllib2
 import urllib
+import urllib3.contrib.pyopenssl
+import certifi
 import xml.etree.cElementTree as Et
 import itertools
+import time
 
 import jsonpickle
 import xmltodict as xmltodict
@@ -22,7 +23,10 @@ from securesubmit.entities.check import *
 from securesubmit.entities.gift import *
 from securesubmit.entities.payplan import *
 from securesubmit.entities.activation import *
-from securesubmit.infrastructure.enums import TypeOfPaymentDataType, EncodingType
+from securesubmit.infrastructure.enums import EncodingType
+
+urllib3.contrib.pyopenssl.inject_into_urllib3()
+http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 
 
 class HpsSoapGatewayService(object):
@@ -94,7 +98,7 @@ class HpsSoapGatewayService(object):
 
             if secret_api_key is not None and secret_api_key != "":
                 api_key = Et.SubElement(header, "SecretAPIKey")
-                api_key.text = secret_api_key
+                api_key.text = secret_api_key.strip()
             else:
                 site_id = Et.SubElement(header, 'SiteId')
                 device_id = Et.SubElement(header, 'DeviceId')
@@ -141,8 +145,8 @@ class HpsSoapGatewayService(object):
 
             request_headers = {'Content-type': 'text/xml; charset=UTF-8',
                                'Content-length': str(len(xml))}
-            request = urllib2.Request(self._url, xml, request_headers)
-            raw_response = urllib2.urlopen(request).read()
+            request = http.request('POST', self._url, headers=request_headers, body=xml)
+            raw_response = request.data
             if self._logging:
                 print 'Response: ' + raw_response
 
@@ -158,14 +162,9 @@ class HpsSoapGatewayService(object):
             else:
                 raise HpsException("Unexpected response")
         except Exception, e:
-            # traceback.print_exc()
-            raise HpsGatewayException(
-                HpsExceptionCodes.unknown_gateway_error,
-                'Unable to process transaction',
-                None,
-                None,
-                e
-            )
+            if self._logging:
+                print e.message
+            raise HpsGatewayException(HpsExceptionCodes.unknown_gateway_error, 'Unable to process transaction', None, None, e)
 
     def _is_config_invalid(self):
         """Determine whether the HPS config has been initialized,
@@ -348,7 +347,7 @@ class HpsSoapGatewayService(object):
             routing_number.text = check.routing_number
         if check.account_type is not None:
             acc_type = Et.SubElement(account_info, 'AccountType')
-            acc_type.text = check.account_type
+            acc_type.text = str(check.account_type)
 
         return account_info
 
@@ -374,26 +373,27 @@ class HpsSoapGatewayService(object):
                 Et.SubElement(cpc_element, 'CardHolderPONbr').text = cpc_data.card_holder_po_number
             if cpc_data.tax_amount is not None:
                 Et.SubElement(cpc_element, 'TaxAmt').text = str(cpc_data.tax_amount)
-            Et.SubElement(cpc_element, 'TaxType').text = cpc_data.tax_type
+            Et.SubElement(cpc_element, 'TaxType').text = str(cpc_data.tax_type)
 
             return cpc_element
         else:
             return None
 
     @staticmethod
-    def hydrate_secure_ecommerce(payment_data):
+    def hydrate_secure_ecommerce(source, payment_data):
         if payment_data is None:
             return None
 
         secure_ecommerce = Et.Element('SecureECommerce')
-        Et.SubElement(secure_ecommerce, 'TypeOfPaymentData').text = TypeOfPaymentDataType.secure_3d
+        Et.SubElement(secure_ecommerce, 'TypeOfPaymentData').text = str(payment_data.payment_data_type)
 
         payment_data_element = Et.SubElement(secure_ecommerce, 'PaymentData')
-        payment_data_element.set('encoding', EncodingType.base64)
+        payment_data_element.set('encoding', str(EncodingType.base64))
         payment_data_element.text = str(payment_data.online_payment_cryptogram)
 
         if payment_data.eci_indicator != '':
             Et.SubElement(secure_ecommerce, 'ECommerceIndicator').text = payment_data.eci_indicator
+        Et.SubElement(secure_ecommerce, 'PaymentDataSource').text = str(source)
 
         return secure_ecommerce
 
@@ -402,7 +402,7 @@ class HpsSoapGatewayService(object):
         if track_data is not None and isinstance(track_data, HpsTrackData):
             track_data_element = Et.Element('TrackData')
             track_data_element.text = track_data.value
-            track_data_element.set('method', track_data.method)
+            track_data_element.set('method', str(track_data.method))
 
             return track_data_element
         else:
@@ -497,38 +497,33 @@ class HpsRestGatewayService(object):
 
     def do_request(self, verb, endpoint, data=None, additional_headers=None):
         url = self._url + endpoint
+        if self._logging:
+            print 'URL: ' + url
 
         if self._limit is not None and self._offset is not None:
             url += '?limit=' + str(self._limit) + '&offset=' + str(self._offset)
 
         headers = self._config.get_headers(additional_headers)
-        basic_auth = self._config.basic_authorization()
+        headers['Authorization'] = 'Basic ' + base64.b64encode(self._config.secret_api_key)
 
-        request_method = getattr(requests, verb.lower())
         if data is not None:
             encoded_data = jsonpickle.encode(data, False, False, True)
             if self._logging:
                 print 'Request: ' + encoded_data
 
-            response = request_method(
-                url,
-                data=encoded_data,
-                headers=headers,
-                auth=basic_auth,
-                verify=False
-            )
+            response = http.request(verb, url, headers=headers, body=encoded_data)
         else:
             if self._logging:
                 print 'Request: ' + url
-            response = request_method(url, headers=headers, auth=basic_auth)
+            response = http.request(verb, url, headers=headers)
 
         if self._logging:
-            print 'Response: ' + response.content
+            print 'Response: ' + response.data
 
-        if response.status_code == 200 or response.status_code == 204:
-            return response.content
-        elif response.status_code == 400:
-            raise HpsException(response.content)
+        if response.status == 200 or response.status == 204:
+            return response.data
+        elif response.status == 400:
+            raise HpsException(response.data)
         else:
             raise HpsException('Unexpected response.')
 
@@ -910,13 +905,13 @@ class HpsCreditService(HpsSoapGatewayService):
         Et.SubElement(transaction, 'TokenValue').text = token
 
         token_actions = Et.SubElement(transaction, 'TokenActions')
-        set = Et.SubElement(token_actions, 'Set')
+        set_element = Et.SubElement(token_actions, 'Set')
 
-        exp_month_element = Et.SubElement(set, 'Attribute')
+        exp_month_element = Et.SubElement(set_element, 'Attribute')
         Et.SubElement(exp_month_element, 'Name').text = 'ExpMonth'
         Et.SubElement(exp_month_element, 'Value').text = str(exp_month)
 
-        exp_year_element = Et.SubElement(set, 'Attribute')
+        exp_year_element = Et.SubElement(set_element, 'Attribute')
         Et.SubElement(exp_year_element, 'Name').text = 'ExpYear'
         Et.SubElement(exp_year_element, 'Value').text = str(exp_year)
 
@@ -1124,16 +1119,16 @@ class HpsCheckService(HpsSoapGatewayService):
         Et.SubElement(block1, 'Amt').text = str(amount)
         block1.append(_hydrate_check_data(check))
         Et.SubElement(block1, 'CheckAction').text = action
-        Et.SubElement(block1, 'SECCode').text = check.sec_code
+        Et.SubElement(block1, 'SECCode').text = str(check.sec_code)
 
         if check.check_verify is True:
             verify_element = Et.SubElement(block1, 'VerifyInfo')
             Et.SubElement(verify_element, 'CheckVerify').text = 'Y' if check.check_verify else 'N'
 
         if check.check_type is not None:
-            Et.SubElement(block1, 'CheckType').text = check.check_type
+            Et.SubElement(block1, 'CheckType').text = str(check.check_type)
         if check.data_entry_mode is not None:
-            Et.SubElement(block1, 'DataEntryMode').text = check.data_entry_mode
+            Et.SubElement(block1, 'DataEntryMode').text = str(check.data_entry_mode)
         if check.check_holder is not None:
             block1.append(_hydrate_consumer_info(check))
 
@@ -1355,6 +1350,7 @@ class HpsPayPlanService(HpsRestGatewayService):
     def delete_customer(self, customer, force_delete=False):
         customer_id = customer if not isinstance(customer, HpsPayPlanCustomer) else customer.customer_key
         response = self.do_request('delete', 'customers/' + str(customer_id), {'forceDelete': force_delete})
+        time.sleep(1)
         return self.hydrate_response(HpsPayPlanCustomer, response)
 
     """ Payment Methods """
@@ -1394,6 +1390,7 @@ class HpsPayPlanService(HpsRestGatewayService):
             payment_method_id = payment_method.payment_method_key
 
         response = self.do_request('delete', 'paymentMethods/' + payment_method_id, {'forceDelete': force_delete})
+        time.sleep(1)
         return self.hydrate_response(HpsPayPlanPaymentMethod, response)
 
     def _add_credit_card(self, payment_method):
@@ -1451,6 +1448,7 @@ class HpsPayPlanService(HpsRestGatewayService):
     def delete_schedule(self, schedule, force_delete=False):
         schedule_id = schedule if not isinstance(schedule, HpsPayPlanSchedule) else schedule.schedule_key
         response = self.do_request('delete', 'schedules/' + str(schedule_id), {'forceDelete': force_delete})
+        time.sleep(1)
         return self.hydrate_response(HpsPayPlanSchedule, response)
 
 
@@ -1642,7 +1640,7 @@ def _hydrate_check_data(check):
         routing_number.text = check.routing_number
     if check.account_type is not None:
         acc_type = Et.SubElement(account_info, 'AccountType')
-        acc_type.text = check.account_type
+        acc_type.text = str(check.account_type)
 
     return account_info
 
@@ -1668,7 +1666,7 @@ def _hydrate_cpc_data(cpc_data):
             Et.SubElement(cpc_element, 'CardHolderPONbr').text = cpc_data.card_holder_po_number
         if cpc_data.tax_amount is not None:
             Et.SubElement(cpc_element, 'TaxAmt').text = str(cpc_data.tax_amount)
-        Et.SubElement(cpc_element, 'TaxType').text = cpc_data.tax_type
+        Et.SubElement(cpc_element, 'TaxType').text = str(cpc_data.tax_type)
 
         return cpc_element
     else:

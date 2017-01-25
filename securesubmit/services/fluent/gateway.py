@@ -301,6 +301,7 @@ class HpsCreditServiceAuthorizeBuilder(HpsBuilderAbstract):
     _gratuity = None
     _auto_substantiation = None
     _original_txn_reference_data = None
+    _payment_data_source = None
 
     def __init__(self, service):
         HpsBuilderAbstract.__init__(self, service)
@@ -354,7 +355,8 @@ class HpsCreditServiceAuthorizeBuilder(HpsBuilderAbstract):
             Et.SubElement(manual_entry, 'ExpYear').text = '20' + exp_date[0:2]
             card_data_element.append(manual_entry)
 
-            block1.append(self._service.hydrate_secure_ecommerce(self._payment_data.payment_data))
+            block1.append(self._service.hydrate_secure_ecommerce(self._payment_data_source,
+                                                                 self._payment_data.payment_data))
 
         # CPC request
         if self._cpc_req is True:
@@ -391,6 +393,8 @@ class HpsCreditServiceAuthorizeBuilder(HpsBuilderAbstract):
             'Authorize can only use one payment method')
         self.add_validation(self.amount_not_none, HpsArgumentException, 'Authorize needs an amount')
         self.add_validation(self.currency_not_none, HpsArgumentException, 'Authorize needs a currency')
+        self.add_validation(self.payment_data_source_not_none,
+                            HpsArgumentException, 'PaymentDataSource required with payment data')
 
     def only_one_payment_method(self):
         payment_methods = 0
@@ -410,6 +414,9 @@ class HpsCreditServiceAuthorizeBuilder(HpsBuilderAbstract):
 
     def currency_not_none(self):
         return self._currency is not None
+
+    def payment_data_source_not_none(self):
+        return self._payment_data is not None or self._payment_data_source is None
 
 
 class HpsCreditServiceBalanceInquiryBuilder(HpsBuilderAbstract):
@@ -522,6 +529,7 @@ class HpsCreditServiceChargeBuilder(HpsBuilderAbstract):
     _reader_present = None
     _gratuity = None
     _original_txn_reference_data = None
+    _payment_data_source = None
 
     def __init__(self, service):
         HpsBuilderAbstract.__init__(self, service)
@@ -576,7 +584,8 @@ class HpsCreditServiceChargeBuilder(HpsBuilderAbstract):
             Et.SubElement(manual_entry, 'ExpYear').text = '20' + exp_date[0:2]
             card_data_element.append(manual_entry)
 
-            block1.append(self._service.hydrate_secure_ecommerce(self._payment_data.payment_data))
+            block1.append(self._service.hydrate_secure_ecommerce(self._payment_data_source,
+                                                                 self._payment_data.payment_data))
 
         # CPC request
         if self._cpc_req is True:
@@ -613,6 +622,8 @@ class HpsCreditServiceChargeBuilder(HpsBuilderAbstract):
             'Authorize can only use one payment method')
         self.add_validation(self.amount_not_none, HpsArgumentException, 'Authorize needs an amount')
         self.add_validation(self.currency_not_none, HpsArgumentException, 'Authorize needs a currency')
+        self.add_validation(self.payment_data_source_not_none,
+                            HpsArgumentException, 'PaymentDataSource required with payment data')
 
     def only_one_payment_method(self):
         payment_methods = 0
@@ -632,6 +643,9 @@ class HpsCreditServiceChargeBuilder(HpsBuilderAbstract):
 
     def currency_not_none(self):
         return self._currency is not None
+
+    def payment_data_source_not_none(self):
+        return self._payment_data is not None or self._payment_data_source is None
 
 
 class HpsCreditServiceCpcEditBuilder(HpsBuilderAbstract):
@@ -1542,7 +1556,7 @@ class HpsDebitServiceSaleBuilder(HpsBuilderAbstract):
 
 class HpsFluentCheckService(HpsSoapGatewayService):
     def __init__(self, config=None, enable_logging=False):
-        HpsSoapGatewayService.__init__(self, config, enable_logging)
+        HpsSoapGatewayService.__init__(self, config, enable_logging=enable_logging)
 
     def with_config(self, config):
         self.services_config = config
@@ -1583,7 +1597,7 @@ class HpsFluentCheckService(HpsSoapGatewayService):
             Et.SubElement(block1, 'Amt').text = str(amount)
         block1.append(self.hydrate_check_data(check))
         Et.SubElement(block1, 'CheckAction').text = action
-        Et.SubElement(block1, 'SECCode').text = check.sec_code
+        Et.SubElement(block1, 'SECCode').text = str(check.sec_code)
 
         if check_verify is not None or ach_verify is not None:
             verify_element = Et.SubElement(block1, 'VerifyInfo')
@@ -1593,9 +1607,9 @@ class HpsFluentCheckService(HpsSoapGatewayService):
                 Et.SubElement(verify_element, 'ACHVerify').text = 'Y' if ach_verify else 'N'
 
         if check.check_type is not None:
-            Et.SubElement(block1, 'CheckType').text = check.check_type
+            Et.SubElement(block1, 'CheckType').text = str(check.check_type)
         if check.data_entry_mode is not None:
-            Et.SubElement(block1, 'DataEntryMode').text = check.data_entry_mode
+            Et.SubElement(block1, 'DataEntryMode').text = str(check.data_entry_mode)
         if check.check_holder is not None:
             block1.append(self.hydrate_consumer_info(check))
 

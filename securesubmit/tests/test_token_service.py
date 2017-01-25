@@ -15,8 +15,7 @@ from securesubmit.services.token import HpsTokenService
 
 
 class TokenServiceTests(unittest.TestCase):
-    token_service = HpsTokenService(
-        TestServicesConfig.valid_services_config.credential_token)
+    token_service = HpsTokenService(TestServicesConfig.valid_services_config.credential_token)
 
     def test_null_public_key(self):
         with self.assertRaises(HpsArgumentException):
@@ -31,9 +30,7 @@ class TokenServiceTests(unittest.TestCase):
             HpsTokenService('pkapi_bad')
 
     def test_bad_public_key(self):
-        token = HpsTokenService(
-            'pkapi_foo_foo').get_token(
-                TestCreditCard.valid_visa)
+        token = HpsTokenService('pkapi_foo_foo').get_token(TestCreditCard.valid_visa)
         self.assertIsNotNone(token)
 
     def test_validation_invalid_card_number(self):
@@ -109,7 +106,7 @@ class TokenServiceTests(unittest.TestCase):
     def test_token_charge(self):
         token = self.token_service.get_token(TestCreditCard.valid_visa)
         charge_service = HpsCreditService(TestServicesConfig.valid_services_config)
-        charge = charge_service.charge(1, 'USD', token.token_value, TestCardHolder.valid_card_holder)
+        charge = charge_service.charge(4, 'USD', token.token_value, TestCardHolder.valid_card_holder)
 
         self.assertIsNotNone(charge)
         self.assertEqual('00', charge.response_code)
@@ -120,7 +117,7 @@ class TokenServiceTests(unittest.TestCase):
         self.assertIsNotNone(token)
 
         charge_service = HpsCreditService(TestServicesConfig.valid_services_config)
-        charge = charge_service.charge(1, 'USD', token.token_value, TestCardHolder.valid_card_holder)
+        charge = charge_service.charge(3, 'USD', token.token_value, TestCardHolder.valid_card_holder)
 
         self.assertIsNotNone(charge)
         self.assertEqual('00', charge.response_code)
@@ -132,7 +129,7 @@ class TokenServiceTests(unittest.TestCase):
         self.assertIsNotNone(token)
 
         charge_service = HpsCreditService(TestServicesConfig.valid_services_config)
-        charge = charge_service.charge(1, 'USD', token.token_value, TestCardHolder.valid_card_holder)
+        charge = charge_service.charge(2, 'USD', token.token_value, TestCardHolder.valid_card_holder)
 
         self.assertIsNotNone(charge)
         self.assertEqual('00', charge.response_code)

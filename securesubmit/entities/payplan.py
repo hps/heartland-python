@@ -6,7 +6,7 @@
     :copyright: (c) Heartland Payment Systems. All rights reserved.
 """
 from securesubmit.infrastructure.enums import HpsPayPlanPaymentMethodType
-
+from enum import Enum
 
 class HpsPayPlanResource(object):
     creation_date = None
@@ -19,7 +19,7 @@ class HpsPayPlanResource(object):
         for k in self.__dict__.keys():
             value = self.__getattribute__(k)
             if k in self.get_editable_fields() and value is not None:
-                fields[self.to_camel_case(k)] = value
+                fields[self.to_camel_case(k)] = str(value)
 
         return fields
 
@@ -299,6 +299,8 @@ class HpsPayPlanSchedule(HpsPayPlanResource):
         editable_fields = self.get_editable_fields(self.schedule_started)
         for k in self.__dict__.keys():
             value = self.__getattribute__(k)
+            if isinstance(value, Enum):
+                value = str(value)
             if k in editable_fields and value is not None:
                 fields[self.to_camel_case(k)] = value
 

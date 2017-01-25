@@ -254,8 +254,8 @@ class TestServicesConfig(object):
     valid_e_gold_config.service_uri = _service_uri
 
     valid_pay_plan_config = HpsPayPlanServiceConfig()
+    # valid_pay_plan_config.secret_api_key = 'skapi_uat_MY5OAAAUrmIFvLDRpO_ufLlFQkgg0Rms2G8WoI1THQ'
     valid_pay_plan_config.secret_api_key = 'skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A'
-    valid_pay_plan_config.public_key = 'pkapi_cert_jKc1FtuyAydZhZfbB3'
 
 
 class TestData(object):

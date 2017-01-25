@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='SecureSubmit',
-    version='2.5.5',
+    version='2.5.6',
     author='Heartland Payment Systems',
     author_email='EntApp_DevPortal@e-hps.com',
     packages=[
@@ -26,6 +26,8 @@ setup(
     install_requires=[
         'xmltodict >= 0.9.0',
         'jsonpickle >= 0.6.1',
-        'enum >= 0.4.4',
-        'requests >= 2.1.0']
+        'enum34 >= 1.1.6',
+        'urllib3[secure] >= 1.18',
+        'certifi >= 2016.9.26'
+    ]
 )

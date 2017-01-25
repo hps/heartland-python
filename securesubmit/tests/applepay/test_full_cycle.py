@@ -11,6 +11,7 @@ class Certification(unittest.TestCase):
         payment_data = TestData.visa_payment_data()
         response = self.credit_service.charge(payment_data.transaction_amount)\
             .with_payment_data(payment_data)\
+            .with_payment_data_source('ApplePay')\
             .with_card_holder(TestCardHolder.valid_card_holder)\
             .with_request_multi_use_token(True)\
             .execute()
@@ -21,6 +22,7 @@ class Certification(unittest.TestCase):
         payment_data = TestData.visa_payment_data()
         response = self.credit_service.authorize(payment_data.transaction_amount)\
             .with_payment_data(payment_data)\
+            .with_payment_data_source('ApplePay')\
             .with_card_holder(TestCardHolder.valid_card_holder)\
             .with_request_multi_use_token(True)\
             .execute()
@@ -36,6 +38,7 @@ class Certification(unittest.TestCase):
         payment_data = TestData.amex_payment_data()
         response = self.credit_service.charge(payment_data.transaction_amount)\
             .with_payment_data(payment_data)\
+            .with_payment_data_source('ApplePay')\
             .with_card_holder(TestCardHolder.valid_card_holder)\
             .with_request_multi_use_token(True)\
             .execute()
@@ -46,6 +49,7 @@ class Certification(unittest.TestCase):
         payment_data = TestData.amex_payment_data()
         response = self.credit_service.authorize(payment_data.transaction_amount)\
             .with_payment_data(payment_data)\
+            .with_payment_data_source('ApplePay')\
             .with_card_holder(TestCardHolder.valid_card_holder)\
             .with_request_multi_use_token(True)\
             .execute()
