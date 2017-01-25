@@ -34,11 +34,13 @@ class HpsSoapGatewayService(object):
     _base_config = None
     _url = None
     _logging = False
+    _timeout = None
 
-    def __init__(self, config=None, enable_logging=False):
+    def __init__(self, config=None, enable_logging=False, timeout=None):
         self._base_config = HpsConfiguration()
         self._config = config
         self._logging = enable_logging
+        self._timeout = timeout
 
         self._url = self._base_config.soap_service_uri
         if self._config is not None:
@@ -145,7 +147,13 @@ class HpsSoapGatewayService(object):
 
             request_headers = {'Content-type': 'text/xml; charset=UTF-8',
                                'Content-length': str(len(xml))}
-            request = http.request('POST', self._url, headers=request_headers, body=xml)
+
+            request = None
+            if self._timeout is None:
+                request = http.request('POST', self._url, headers=request_headers, body=xml)
+            else:
+                request = http.request('POST', self._url, headers=request_headers, body=xml, timeout=self._timeout)
+
             raw_response = request.data
             if self._logging:
                 print 'Response: ' + raw_response
@@ -477,10 +485,12 @@ class HpsRestGatewayService(object):
     _offset = None
     _search_fields = None
     _logging = False
+    _timeout = None
 
-    def __init__(self, config=None, enable_logging=False):
+    def __init__(self, config=None, enable_logging=False, timeout=None):
         self._config = config
         self._logging = enable_logging
+        self._timeout = timeout
 
         config.validate()
         self._url = config.service_uri()
@@ -511,11 +521,20 @@ class HpsRestGatewayService(object):
             if self._logging:
                 print 'Request: ' + encoded_data
 
-            response = http.request(verb, url, headers=headers, body=encoded_data)
+            response = None
+            if self._timeout is None:
+                response = http.request(verb, url, headers=headers, body=encoded_data)
+            else:
+                response = http.request(verb, url, headers=headers, body=encoded_data, timeout=self._timeout)
         else:
             if self._logging:
                 print 'Request: ' + url
-            response = http.request(verb, url, headers=headers)
+
+            response = None
+            if self._timeout is None:
+                response = http.request(verb, url, headers=headers)
+            else:
+                response = http.request(verb, url, headers=headers, timeout=self._timeout)
 
         if self._logging:
             print 'Response: ' + response.data
@@ -539,8 +558,8 @@ class HpsRestGatewayService(object):
 class HpsCreditService(HpsSoapGatewayService):
     _filter_by = None
 
-    def __init__(self, config=None, enable_logging=False):
-        HpsSoapGatewayService.__init__(self, config, enable_logging)
+    def __init__(self, config=None, enable_logging=False, timeout=None):
+        HpsSoapGatewayService.__init__(self, config, enable_logging, timeout)
 
     def get(self, transaction_id):
         if transaction_id is None or transaction_id <= 0:
@@ -1019,8 +1038,8 @@ class HpsCreditService(HpsSoapGatewayService):
 
 
 class HpsBatchService(HpsSoapGatewayService):
-    def __init__(self, config=None, enable_logging=False):
-        HpsSoapGatewayService.__init__(self, config, enable_logging)
+    def __init__(self, config=None, enable_logging=False, timeout=None):
+        HpsSoapGatewayService.__init__(self, config, enable_logging, timeout)
 
     def close_batch(self):
         transaction = Et.Element('BatchClose')
@@ -1050,8 +1069,8 @@ class HpsBatchService(HpsSoapGatewayService):
 
 
 class HpsCheckService(HpsSoapGatewayService):
-    def __init__(self, config, enable_logging=False):
-        HpsSoapGatewayService.__init__(self, config, enable_logging)
+    def __init__(self, config, enable_logging=False, timeout=None):
+        HpsSoapGatewayService.__init__(self, config, enable_logging, timeout)
 
     def override(self, check, amount, client_transaction_id=None):
         return self._build_transaction('OVERRIDE', check, amount, client_transaction_id)
@@ -1152,8 +1171,8 @@ class HpsCheckService(HpsSoapGatewayService):
 
 
 class HpsGiftCardService(HpsSoapGatewayService):
-    def __init__(self, config=None, enable_logging=False):
-        HpsSoapGatewayService.__init__(self, config, enable_logging)
+    def __init__(self, config=None, enable_logging=False, timeout=None):
+        HpsSoapGatewayService.__init__(self, config, enable_logging, timeout)
 
     def activate(self, amount, currency, gift_card):
         HpsInputValidation.check_amount(amount)
@@ -1322,8 +1341,8 @@ class HpsGiftCardService(HpsSoapGatewayService):
 
 
 class HpsPayPlanService(HpsRestGatewayService):
-    def __init__(self, config=None, enable_logging=False):
-        HpsRestGatewayService.__init__(self, config, enable_logging)
+    def __init__(self, config=None, enable_logging=False, timeout=None):
+        HpsRestGatewayService.__init__(self, config, enable_logging, timeout)
 
     """ Customers """
 
@@ -1453,8 +1472,8 @@ class HpsPayPlanService(HpsRestGatewayService):
 
 
 class HpsActivationService(HpsRestGatewayService):
-    def __init__(self, config=None, enable_logging=False):
-        HpsRestGatewayService.__init__(self, config, enable_logging)
+    def __init__(self, config=None, enable_logging=False, timeout=None):
+        HpsRestGatewayService.__init__(self, config, enable_logging, timeout)
 
     def device_activation_key(self, merchant_id, activation_code):
         args = {
