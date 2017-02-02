@@ -162,8 +162,6 @@ class HpsPayPlanPaymentMethodStatus(Enum):
     REVOKED = 'Revoked'
     EXPIRED = 'Expired'
     LOST_STOLEN = 'Lost/Stolen'
-    ACTIVE = 'Active'
-    INACTIVE = 'Inactive'
 
     def __str__(self):
         return str(self.value)
@@ -203,8 +201,6 @@ class HpsPayPlanScheduleStatus(Enum):
     ACTIVE = 'Active'
     INACTIVE = 'Inactive'
     FAILED = 'FAILED'
-    ACTIVE = 'Active'
-    INACTIVE = 'Inactive'
 
     def __str__(self):
         return str(self.value)
