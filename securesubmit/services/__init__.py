@@ -97,6 +97,7 @@ class HpsServicesConfig(_HpsConfigInterface):
     password = None
     developer_id = None
     site_trace = None
+    timeout = None
 
     def __init__(self):
         self.UAT_URL = 'https://api-uat.heartlandportico.com/paymentserver.v1/PosGatewayService.asmx?wsdl'
