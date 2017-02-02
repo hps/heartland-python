@@ -6,6 +6,7 @@ securesubmit/serialization.py
 securesubmit/applepay/__init__.py
 securesubmit/applepay/ecv1.py
 securesubmit/entities/__init__.py
+securesubmit/entities/activation.py
 securesubmit/entities/batch.py
 securesubmit/entities/check.py
 securesubmit/entities/credit.py
@@ -24,8 +25,6 @@ securesubmit/services/fluent/gateway.py
 securesubmit/tests/__init__.py
 securesubmit/tests/test_ach_echeck.py
 securesubmit/tests/test_amex.py
-securesubmit/tests/test_batch_certification.py
-securesubmit/tests/test_certification.py
 securesubmit/tests/test_data.py
 securesubmit/tests/test_discover.py
 securesubmit/tests/test_general.py

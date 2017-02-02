@@ -155,6 +155,10 @@ class HpsReportTransactionDetails(HpsAuthorization):
     memo = None
     invoice_number = None
     customer_id = None
+    transaction_status = None
+    returned_amount = None
+    reversed_amount = None
+    payment_method_key = None
 
     @classmethod
     def from_dict(cls, rsp):
@@ -185,6 +189,9 @@ class HpsReportTransactionDetails(HpsAuthorization):
         if 'AuthAmt' in report_response['Data']:
             details.authorized_amount = report_response['Data']['AuthAmt']
 
+        if 'AuthCode' in report_response['Data']:
+            details.authorization_code = report_response['Data']['AuthCode']
+
         if 'AVSRsltCode' in report_response['Data']:
             details.avs_result_code = report_response['Data']['AVSRsltCode']
 
@@ -209,16 +216,28 @@ class HpsReportTransactionDetails(HpsAuthorization):
         if 'RefNbr' in report_response['Data']:
             details.reference_number = report_response['Data']['RefNbr']
 
+        if 'ReturnAmtInfo' in report_response['Data']:
+            details.returned_amount = report_response['Data']['ReturnAmtInfo']
+
+        if 'ReversalAmtInfo' in report_response['Data']:
+            details.reversed_amount = report_response['Data']['ReversalAmtInfo']
+
         if 'RspCode' in report_response['Data']:
             details.response_code = report_response['Data']['RspCode']
 
         if 'RspText' in report_response['Data']:
             details.response_text = report_response['Data']['RspText']
 
+        if 'PaymentMethodKey' in report_response['Data']:
+            details.payment_method_key = report_response['Data']['PaymentMethodKey']
+
         if 'TokenizationMsg' in report_response['Data']:
             details.token_data = HpsTokenData()
             details.token_data.token_rsp_msg = \
                 report_response['Data']['TokenizationMsg']
+
+        if 'TxnStatus' in report_response['Data']:
+            details.transaction_status = report_response['Data']['TxnStatus']
 
         if 'AdditionalTxnFields' in report_response['Data']:
             if 'Description' in report_response['Data']['AdditionalTxnFields']:
