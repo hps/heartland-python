@@ -155,6 +155,7 @@ class HpsPayPlanCustomerStatus(Enum):
     def __str__(self):
         return str(self.value)
 
+
 class HpsPayPlanPaymentMethodStatus(Enum):
     ACTIVE = 'Active'
     INACTIVE = 'Inactive'
