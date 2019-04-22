@@ -916,6 +916,15 @@ class HpsCreditService(HpsSoapGatewayService):
         Et.SubElement(exp_year_element, 'Value').text = str(exp_year)
 
         return self._submit_transaction(transaction)
+    
+    def delete_token(self, token):
+        transaction = Et.Element('ManageTokens')
+        Et.SubElement(transaction, 'TokenValue').text = token
+
+        token_actions = Et.SubElement(transaction, 'TokenActions')
+        set_element = Et.SubElement(token_actions, 'Delete')
+
+        return self._submit_transaction(transaction)
 
     # def balance inquiry
 
