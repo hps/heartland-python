@@ -310,3 +310,24 @@ class GeneralTests(unittest.TestCase):
         update_token_response = self.charge_service.update_token_expiry(response.token_data.token_value, 12, 2035)
         self.assertIsNotNone(response)
         self.assertEqual('0', update_token_response.response_code)
+        
+    def test_delete_token(self):
+        config = HpsServicesConfig()
+        config.secret_api_key = 'skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A'
+
+        self.charge_service._config = config
+
+        card = HpsCreditCard()
+        card.number = "4111111111111111"
+        card.exp_month = 12
+        card.exp_year = 2025
+        card.cvv = "012"
+
+        response = self.charge_service.authorize(12.10, 'usd', card, request_multi_use_token=True)
+        self.assertIsNotNone(response)
+        self.assertEqual('00', response.response_code)
+        self.assertIsNotNone(response.token_data)
+
+        delete_token_response = self.charge_service.delete_token(response.token_data.token_value)
+        self.assertIsNotNone(response)
+        self.assertEqual('0', delete_token_response.response_code)
