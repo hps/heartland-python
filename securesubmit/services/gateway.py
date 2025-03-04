@@ -145,7 +145,9 @@ class HpsSoapGatewayService(object):
 
             request_headers = {'Content-type': 'text/xml; charset=UTF-8',
                                'Content-length': str(len(xml))}
-            request = http.request('POST', self._url, headers=request_headers, body=xml)
+
+            request = http.request('POST', self._url, headers=request_headers, body=xml, timeout=self._config.timeout)
+
             raw_response = request.data
             if self._logging:
                 print 'Response: ' + raw_response
@@ -511,11 +513,12 @@ class HpsRestGatewayService(object):
             if self._logging:
                 print 'Request: ' + encoded_data
 
-            response = http.request(verb, url, headers=headers, body=encoded_data)
+            response = http.request(verb, url, headers=headers, body=encoded_data, timeout=self._config.timeout)
         else:
             if self._logging:
                 print 'Request: ' + url
-            response = http.request(verb, url, headers=headers)
+
+            response = http.request(verb, url, headers=headers, timeout=self._config.timeout)
 
         if self._logging:
             print 'Response: ' + response.data

@@ -22,9 +22,11 @@ class HpsTokenService(object):
 
     _public_api_key = None
     _url = None
+    _timeout = None
 
-    def __init__(self, public_api_key):
+    def __init__(self, public_api_key, timeout=None):
         self._public_api_key = public_api_key
+        self._timeout = timeout
 
         if public_api_key is None or public_api_key == "":
             raise HpsArgumentException("publicAPIKey is None or Empty.")
@@ -57,7 +59,11 @@ class HpsTokenService(object):
             #                          headers=headers,
             #                          auth=(self._public_api_key, None))
 
-            response = http.request('post', self._url, headers=headers, body=data)
+            response = None
+            if self._timeout is None:
+                response = http.request('post', self._url, headers=headers, body=data)
+            else:
+                response = http.request('post', self._url, headers=headers, body=data, timeout=self._timeout)
 
             token = HpsToken()
             if len(response.data) > 0:
